@@ -83,6 +83,11 @@ module Client =
                 equalMsg (MathJS.Math.Multiply(a, b)) 15. "Multiply([2,4,1], [2,2,3]) = 15"
             }
 
+            Test "MathJS cross procudt" {
+                let a = [| [| 1.; 2.; 3. |] |]
+                let b = [| [| 4. |]; [| 5. |]; [| 6. |] |]
+                equalMsg (MathJS.Math.Cross(a, b)) [| [| -3.; 6.; -3. |] |] "Cross([[1,2,3]],[[4],[5],[6]]) = [[-3,6,-3]]"
+            }
         }
 
 #if ZAFIR
