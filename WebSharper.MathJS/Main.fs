@@ -6,30 +6,49 @@ open WebSharper.InterfaceGenerator
 module Definition =
     open System.Numerics
 
-    let Vector<'T> = Type.ArrayOf T<'T>
+    let Vector = Type.ArrayOf T<float>
 
-    let Matrix<'T> = Type.ArrayOf Vector<'T>
+    let Matrix = Type.ArrayOf Vector
 
     let Unit
         = T<float> * T<string>
-        + T<string>
 
-    let AllValues<'T> = 
+    let AllValues = 
         [|
             T<float>
-            Vector<'T>
-            Matrix<'T>
+            Vector
+            Matrix
             T<bigint>
             T<Complex>
             Unit
+            T<string>
             T<bool>
         |]
+        |> List.ofArray
+
+    let Matrices = 
+        [|
+            Vector
+            Matrix
+        |]
+        |> List.ofArray
+
+    let Numbers = 
+        [|
+            T<float>
+            T<bool>
+            T<bigint>
+            T<Complex>
+            Unit
+        |]
+        |> List.ofArray
         
     let WithTypes values f =
-        List.reduce (fun l r -> l + r) <| List.map f values
+        List.map f values
+        |> List.reduce (fun l r -> l + r)
 
     let Scope
-        = Type.ArrayOf (T<string> * (Value + T<JavaScript.Function>))
+        = Type.ArrayOf (T<string> * (T<obj> + T<JavaScript.Function>))
 
     let Expression
         = T<string>
@@ -66,11 +85,11 @@ module Definition =
         Class "Parser"
         |+> Instance [
             "clear" => T<unit> ^-> T<unit>
-            "eval" => T<string> ^-> Value
-            "get" => T<string> ^-> Value + T<JavaScript.Function>
+            "eval" => WithTypes AllValues (fun t -> T<string> ^-> t)
+            "get" => WithTypes AllValues (fun t -> T<string> ^-> t + T<JavaScript.Function>)
             "getAll" => T<unit> ^-> T<obj>
             "remove" => T<string> ^-> T<unit>
-            "set" => T<string> * Value ^-> T<unit>
+            "set" => WithTypes AllValues (fun t -> T<string> * t ^-> T<unit>)
         ]
 
     let AccessorNode            = Class "math.expression.node.accessornode"
@@ -184,9 +203,9 @@ module Definition =
     ConstantNode
         |=> Implements [Node]
         |+> Instance [
-            Constructor (Value * !? T<string>)
+            Constructor (WithTypes AllValues (fun t -> t * !? T<string>))
 
-            "value" =? Value
+            "value" =? WithTypes AllValues (fun t -> t)
             "valueType" =? T<string>
         ]
         |> ignore
@@ -278,6 +297,11 @@ module Definition =
         ]
         |> ignore
 
+    let Index =
+        Class "index"
+        |+> Instance [
+            Constructor (T<string> + T<int> + Vector + Matrix)
+        ]
 
     let MathClass =
         Class "math"
@@ -288,7 +312,7 @@ module Definition =
             "create" => !? Config.Type ^-> TSelf
             |> WithComment "Create and configure a math engine."
 
-            "chain" => !? Value ^-> Chain.Type
+            "chain" => WithTypes AllValues (fun t -> !? t ^-> Chain.Type)
             |> WithComment "Chain functions."
 
             "import" => (Type.ArrayOf T<string * JavaScript.Function> + Type.ArrayOf T<JavaScript.Function>) * !? Options.Type
@@ -298,38 +322,38 @@ module Definition =
             |> WithComment "Creates a typed function."
 
             //constuction
-            "bignumber" => Value ^-> T<bigint>
+            "bignumber" => WithTypes AllValues (fun t -> t ^-> T<bigint>)
 
-            "boolean" => Value ^-> T<bool>
+            "boolean" => WithTypes AllValues (fun t -> t ^-> T<bool>)
 
-            "complex" => (T<unit> + (T<float> * T<string>) + T<float> + T<Complex> + T<string> + Vector) ^-> T<Complex>
+            "complex" => (T<unit> + T<float> + T<Complex> + T<string> + Vector ^-> T<Complex>) + (T<float> * T<string> ^-> T<Complex>)
 
             "createUnit" => T<string> * (T<string> * Unit) * T<obj> ^-> Unit
 
             "fraction" => T<float> * T<float> ^-> T<float>
 
-            "fraction" => (Vector ^-> Vector) + (Matrix ^-> Matrix)
+            "fraction" => WithTypes Matrices (fun t -> t ^-> t)
 
             "index" => Vector ^-> Vector
 
             "matrix" => !? Matrix * !? T<string> * !? T<string> ^-> Matrix
 
-            "number" => Value * !? T<string> ^-> Value
+            "number" => WithTypes AllValues (fun t -> t * !? T<string> ^-> t)
 
-            "sparse" => !? Value * !? T<string> ^-> Matrix
+            "sparse" => WithTypes AllValues (fun t -> !? t * !? T<string> ^-> Matrix)
 
             "splitUnit" => Unit * Type.ArrayOf T<string> ^-> Vector
 
-            "string" => Value ^-> T<string>
+            "string" => WithTypes AllValues (fun t -> t ^-> T<string>)
 
-            "unit" => !? T<float> * T<string> ^-> Value
+            "unit" => WithTypes AllValues (fun t -> !? T<float> * T<string> ^-> t)
 
             //expression
             "compile" => T<string> ^-> T<obj>
 
             "compile" => !| T<string> ^-> !| T<obj>
 
-            "eval" => (T<string> * !? Scope) + (Type.ArrayOf T<string> * !? Scope) ^-> Value
+            "eval" => WithTypes AllValues (fun t -> (T<string> * !? Scope) + (Type.ArrayOf T<string> * !? Scope) ^-> t)
 
             "help" => (T<JavaScript.Function> + T<string> + T<obj>) ^-> T<obj>
 
@@ -338,7 +362,7 @@ module Definition =
             "parser" => T<unit> ^-> Parser.Type
 
             //algebra
-            "derivate" => (Node + T<string>) * (SymbolNode + T<string>) * !? T<bool> ^-> Node
+            "derivative" => (Node + T<string>) * (SymbolNode + T<string>) * !? T<bool> ^-> Node
 
             "lsolve" => (Matrix + Vector) * (Matrix + Vector) ^-> (Matrix + Vector)
 
@@ -355,301 +379,301 @@ module Definition =
             "usolve" => (Matrix + Vector) * (Matrix + Vector) ^-> (Matrix + Vector)
 
             //arithmetic
-            "abs" => Value ^-> Value
+            "abs" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "add" => (Value * Value *+ Value) ^-> Value
+            "add" => WithTypes AllValues (fun t -> (t * t *+ t) ^-> t)
 
-            "cbrt" => Value * !? T<bool> ^-> Value
+            "cbrt" => WithTypes AllValues (fun t -> t * !? T<bool> ^-> t)
 
-            "ceil" => Value ^-> Value
+            "ceil" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "cube" => Value ^-> Value
+            "cube" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "divide" => Value * Value ^-> Value
+            "divide" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "dotDivide" => Value * Value ^-> Value
+            "dotDivide" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "dotMultiply" => Value * Value ^-> Value
+            "dotMultiply" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "dotPow" => Value * Value ^-> Value
+            "dotPow" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "exp" => Value ^-> Value
+            "exp" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "fix" => Value ^-> Value
+            "fix" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "floor" => Value ^-> Value
+            "floor" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "gcd" => Value * Value ^-> Value
+            "gcd" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "hypot" => !| Value ^-> Value
+            "hypot" => WithTypes AllValues (fun t -> t *+ t ^-> t)
 
-            "lcm" => !| Value ^-> Value
+            "lcm" => WithTypes AllValues (fun t -> t *+ t ^-> t)
 
-            "log" => Value * !? Value ^-> Value
+            "log" => WithTypes AllValues (fun t -> t * !? t ^-> t)
 
-            "log10" => Value ^-> Value
+            "log10" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "mod" => Value * Value ^-> Value
+            "mod" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "multiply" => !| Value ^-> Value
+            "multiply" => WithTypes AllValues (fun t -> (t * t *+ t) ^-> t)
 
-            "norm" => Value * !? Value ^-> Value
+            "norm" =>  WithTypes AllValues (fun t -> t * !? t ^-> t)
 
-            "nthRoot" => Value * !? Value ^-> Value
+            "nthRoot" =>  WithTypes AllValues (fun t -> t * !? t ^-> t)
 
-            "pow" => Value * Value ^-> Value
+            "pow" =>  WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "round" => Value * Value ^-> Value
+            "round" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "sign" => Value ^-> Value
+            "sign" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "sqrt" => Value ^-> Value
+            "sqrt" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "square" => Value ^-> Value
+            "square" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "subtract" => Value * Value ^-> Value
+            "subtract" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "unaryMinus" => Value ^-> Value
+            "unaryMinus" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "unaryPlus" => Value ^-> Value
+            "unaryPlus" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "xgcd" => Value * Value ^-> !| Value
+            "xgcd" => WithTypes AllValues (fun t -> t * t ^-> !| t)
 
             //bitwise
-            "bitAnd" => Value * Value ^-> Value
+            "bitAnd" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "bitNot" => Value ^-> Value
+            "bitNot" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "bitOr" => Value * Value ^-> Value
+            "bitOr" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "bitXor" => Value * Value ^-> Value
+            "bitXor" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "leftShift" => Value * Value ^-> Value
+            "leftShift" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "rightArithShift" => Value * Value ^-> Value
+            "rightArithShift" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "rightLogShift" => Value * Value ^-> Value
+            "rightLogShift" => WithTypes AllValues (fun t -> t * t ^-> t)
 
             //combinatorics
-            "bellNumbers" => Value ^-> Value
+            "bellNumbers" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "catalan" => Value ^-> Value
+            "catalan" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "composition" => Value * Value ^-> Value
+            "composition" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "stirlingS2" => Value * Value ^-> Value
+            "stirlingS2" => WithTypes AllValues (fun t -> t * t ^-> t)
 
             //complex
-            "arg" => Value ^-> Value
+            "arg" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "conj" => Value ^-> Value
+            "conj" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "im" => Value ^-> Value
+            "im" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "re" => Value ^-> Value
+            "re" => WithTypes AllValues (fun t -> t ^-> t)
 
             //geometry
-            "distance" => (Matrix + Vector) * (Matrix + Vector) ^-> Value
+            "distance" => WithTypes Matrices (fun t -> t * t ^-> T<bigint>)
 
-            "intersect" => (Matrix + Vector) * (Matrix + Vector) * (Matrix + Vector) * (Matrix + Vector) ^-> Vector
+            "intersect" => WithTypes Matrices (fun t -> t * t * t * t ^-> Vector)
 
             //logic
-            "and" => Value * Value ^-> Value
+            "and" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "not" => Value ^-> Value
+            "not" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "or" => Value * Value ^-> Value
+            "or" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "xor" => Value * Value ^-> Value
+            "xor" => WithTypes AllValues (fun t -> t * t ^-> t)
 
             //matrix
-            "concat" => !| (Matrix + Vector) ^-> (Matrix + Vector)
+            "concat" => WithTypes Matrices (fun t -> !| t ^-> t)
 
-            "cross" => (Matrix + Vector) * (Matrix + Vector) ^-> (Matrix + Vector)
+            "cross" => WithTypes Matrices (fun t -> t * t ^-> t)
 
-            "det" => (Matrix + Vector) ^-> Value
+            "det" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "diag" => (Matrix + Vector) * !? Value * !? T<string> ^-> (Matrix + Vector)
+            "diag" => WithTypes Matrices (fun t -> t * !?  (WithTypes Numbers (fun f -> f)) * !? T<string> ^-> t)
 
-            "dot" => (Matrix + Vector) * (Matrix + Vector) ^-> T<float>
+            "dot" => WithTypes Matrices (fun t -> t * t ^-> T<float>)
 
-            "eye" => T<int> * T<int> ^-> (Matrix + Vector + T<int>)
+            "eye" => WithTypes Matrices (fun t -> T<int> * T<int> ^-> (t + T<int>))
 
-            "filter" => (Matrix + Vector) * (T<JavaScript.Function> + T<string>) ^-> (Matrix + Vector)
+            "filter" => WithTypes Matrices (fun t -> t * (T<JavaScript.Function> + T<string>) ^-> t)
 
-            "flatten" => (Matrix + Vector) ^-> (Matrix + Vector)
+            "flatten" => WithTypes Matrices (fun t -> t ^-> t)
 
-            "forEach" => (Matrix + Vector) * T<JavaScript.Function> ^-> T<unit>
+            "forEach" => WithTypes Matrices (fun t -> t * T<JavaScript.Function> ^-> T<unit>)
 
-            "inv" => Value ^-> Value
+            "inv" => WithTypes AllValues (fun t -> t)
 
-            "kron" => (Matrix + Vector) * (Matrix + Vector) ^-> (Matrix + Vector)
+            "kron" => WithTypes Matrices (fun t -> t * t ^-> t)
 
-            "map" => (Matrix + Vector) * T<JavaScript.Function> ^-> (Matrix + Vector)
+            "map" => WithTypes Matrices (fun t -> t * T<JavaScript.Function> ^-> t)
 
-            "ones" => !| T<int> ^-> (Matrix + Vector + T<int>)
+            "ones" => WithTypes Matrices (fun t -> !+ T<int> ^-> t + T<int>)
 
-            "partitionSelect" => (Matrix + Vector) * T<int> * (T<string> + T<JavaScript.Function>) ^-> Value
+            "partitionSelect" => WithTypes Matrices (fun t -> t * T<int> * (T<string> + T<JavaScript.Function>) ^-> T<float>)
 
-            "range" => T<string> * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? T<bool> ^-> (Matrix * Vector)
+            "range" => WithTypes Matrices (fun t -> T<string> * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? T<bool> ^-> t)
 
-            "reshape" => (Matrix + Vector) * !| T<int> ^-> (Matrix + Vector)
+            "reshape" => WithTypes Matrices (fun t -> t * !| T<int> ^-> t)
 
-            "resize" => (Matrix + Vector) * (Matrix + Vector) * !? (T<int> + T<string>) ^-> (Matrix + Vector)
+            "resize" => WithTypes Matrices (fun t -> t * t * !? (T<int> + T<string>) ^-> t)
 
-            "size" => Value ^-> (Matrix + Vector)
+            "size" => WithTypes Matrices (fun t -> WithTypes AllValues (fun f -> f) ^-> t)
 
-            "sort" => (Matrix + Vector) ^-> (T<string> + T<JavaScript.Function>) ^-> (Matrix + Vector)
+            "sort" => WithTypes Matrices (fun t -> t * (T<string> + T<JavaScript.Function>) ^-> t)
 
-            "squeeze" => (Matrix + Vector) ^-> Matrix
+            "squeeze" => WithTypes Matrices (fun t -> t ^-> Matrix)
 
-            "subset" => (Matrix + Vector + T<string>) * T<int> * !? (Matrix + Vector + T<int>) * !? Value ^-> (Matrix + Vector + T<string>)
+            "subset" => WithTypes Matrices (fun t -> (t + T<string>) * T<int> * !? (t + T<int>) * !? Index ^-> (t + T<string>))
 
-            "trace" => (Matrix + Vector) ^-> T<float>
+            "trace" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "transpose" => (Matrix + Vector) ^-> (Matrix + Vector)
+            "transpose" => WithTypes Matrices (fun t -> t ^-> t)
 
-            "zeros" => !| T<int> ^-> (Matrix + Vector)
+            "zeros" => WithTypes Matrices (fun t -> !+ T<int> ^-> t)
 
             //probability
             "combination" => (T<int> + T<bigint>) * (T<int> + T<bigint>) ^-> (T<int> + T<bigint>)
 
-            "factorial" => Value ^-> Value
+            "factorial" => WithTypes Numbers (fun t -> t ^-> t)
 
-            "gamma" => (Matrix + Vector + T<int>) ^-> (Matrix + Vector + T<int>)
+            "gamma" => WithTypes Matrices (fun t -> (t + T<int>) ^-> (t + T<int>))
 
-            "kldivergence" => (Matrix + Vector) * (Matrix + Vector)  ^-> T<int>
+            "kldivergence" => WithTypes Matrices (fun t -> t * t ^-> T<int>)
 
-            "multinomial" => !| (T<int> + T<bigint>) ^-> (T<int> + T<bigint>)
+            "multinomial" => !+ (T<int> + T<bigint>) ^-> (T<int> + T<bigint>)
 
             "permutations" => (T<int> + T<bigint>) * !? (T<int> + T<bigint>) ^-> (T<int> + T<bigint>)
 
             "pickRandom" => Vector * !? T<int> * !? Vector ^-> Vector
 
-            "random" => !?(Matrix + Vector) * !? T<int> * !? T<int> ^-> (T<int> + Matrix + Vector)
+            "random" => WithTypes Matrices (fun t -> !? t * !? T<int> * !? T<int> ^-> (T<int> + t))
 
-            "randomInt" => T<int> * !? T<int> ^-> (T<int> + Matrix + Vector)
+            "randomInt" => WithTypes Matrices (fun t -> T<int> * !? T<int> ^-> (T<int> + t))
 
-            "randomInt" => (Matrix + Vector) * !? T<int> * !? T<int> ^-> (T<int> + Matrix + Vector)
+            "randomInt" => WithTypes Matrices (fun t -> t * !? T<int> * !? T<int> ^-> (T<int> + t))
 
             //relational
-            "compare" => Value * Value ^-> Value
+            "compare" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "deepEqual" => Value * Value ^-> Value
+            "deepEqual" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "equal" => Value * Value ^-> Value
+            "equal" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "larger" => Value * Value ^-> Value
+            "larger" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "largerEq" => Value * Value ^-> Value
+            "largerEq" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "smaller" => Value * Value ^-> Value
+            "smaller" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "smallerEq" => Value * Value ^-> Value
+            "smallerEq" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "unequal" => Value * Value ^-> Value
+            "unequal" => WithTypes AllValues (fun t -> t * t ^-> t)
 
             //special
-            "erf" => (T<int> + Matrix + Vector) ^-> (T<int> + Matrix + Vector)
+            "erf" => WithTypes Matrices (fun t -> (T<int> + t) ^-> (T<int> + t))
             
             //statistics
-            "mad" => (Matrix + Vector) ^-> Value
+            "mad" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "max" => (Matrix + Vector) ^-> Value
+            "max" => WithTypes Matrices (fun t -> t ^-> T<float>)
             
-            "mean" => (Matrix + Vector) ^-> Value 
+            "mean" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "median" => (Matrix + Vector) ^-> Value 
+            "median" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "min" => (Matrix + Vector) ^-> Value 
+            "min" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "mode" => (Matrix + Vector) ^-> Value 
+            "mode" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "prod" => (Matrix + Vector) ^-> Value 
+            "prod" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "quantileSeq" => (Matrix + Vector) * !? !|(T<int> + T<bigint> + Vector) * !? T<bool> ^-> Value
+            "quantileSeq" => WithTypes Matrices (fun t -> t *+ !? (T<int> + T<bigint> + Vector) * !? T<bool> ^-> T<float>)
 
-            "std" => (Matrix + Vector) * !? T<string> ^-> Value
+            "std" => WithTypes Matrices (fun t -> t * !? T<string> ^-> T<float>)
             
-            "sum" => (Matrix + Vector) ^-> Value 
+            "sum" => WithTypes Matrices (fun t -> t ^-> T<float>)
 
-            "var" => (Matrix + Vector) ^-> Value 
+            "var" => WithTypes Matrices (fun t -> t ^-> T<float>) 
 
             //string
-            "format" => Value * !? T<int> * !? T<JavaScript.Function> ^-> T<string>
+            "format" => WithTypes AllValues (fun t -> t * !? T<int> * !? T<JavaScript.Function> ^-> T<string>)
 
-            "print" => T<string> * !| Value * !? T<int> ^-> T<string>
+            "print" =>  WithTypes AllValues (fun t -> T<string> * !| t * !? T<int> ^-> T<string>)
 
             //trigonometry
-            "acos" => Value ^-> Value
+            "acos" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "acosh" => Value ^-> Value
+            "acosh" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "acot" => Value ^-> Value
+            "acot" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "acoth" => Value ^-> Value
+            "acoth" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "acsc" => Value ^-> Value
+            "acsc" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "acsch" => Value ^-> Value
+            "acsch" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "asec" => Value ^-> Value
+            "asec" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "asech" => Value ^-> Value
+            "asech" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "asin" => Value ^-> Value
+            "asin" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "asinh" => Value ^-> Value
+            "asinh" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "atan" => Value ^-> Value
+            "atan" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "atan2" => Value * Value ^-> Value
+            "atan2" => WithTypes AllValues (fun t -> t * t ^-> t)
             
-            "atanh" => Value ^-> Value
+            "atanh" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "cos" => Value ^-> Value
+            "cos" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "cosh" => Value ^-> Value
+            "cosh" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "cot" => Value ^-> Value
+            "cot" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "coth" => Value ^-> Value
+            "coth" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "csc" => Value ^-> Value
+            "csc" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "csch" => Value ^-> Value
+            "csch" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "sec" => Value ^-> Value
+            "sec" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "sech" => Value ^-> Value
+            "sech" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "sin" => Value ^-> Value
+            "sin" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "sinh" => Value ^-> Value
+            "sinh" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "tan" => Value ^-> Value
+            "tan" => WithTypes AllValues (fun t -> t ^-> t)
             
-            "tanh" => Value ^-> Value
+            "tanh" => WithTypes AllValues (fun t -> t ^-> t)
 
             //unit
             "to" => (Unit + Vector + Matrix) * (Unit + Vector + Matrix) ^-> (Unit + Vector + Matrix)
 
             //utils
-            "clone" => Value ^-> Value
+            "clone" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "isInteger" => Value ^-> T<bool>
+            "isInteger" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isNaN" => Value ^-> T<bool>
+            "isNaN" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isNegative" => Value ^-> T<bool>
+            "isNegative" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isNumeric" => Value ^-> T<bool>
+            "isNumeric" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isPositive" => Value ^-> T<bool>
+            "isPositive" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isPrime" => Value ^-> T<bool>
+            "isPrime" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
-            "isZero" => Value ^-> T<bool>
+            "isZero" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
             "typeof" => T<obj> ^-> T<string>
 
@@ -684,8 +708,320 @@ module Definition =
             "version" =? T<string>   
         ]
 
-    Chain 
-        |=> Implements [MathClass]
+    Chain
+        |+> Instance [
+            //algebra
+            "derivative" => T<unit> * (SymbolNode + T<string>) * !? T<bool> ^-> Chain.Type
+
+            "lsolve" => (Matrix + Vector) ^-> Chain.Type
+
+            "lup" => T<unit> ^-> Chain.Type
+
+            "lusolve" => (Matrix + Vector) ^-> Chain.Type
+
+            "qr" => T<unit> ^-> Chain.Type
+
+            "simplify" => !? (T<string * string> + T<string> + T<JavaScript.Function>) ^-> Chain.Type
+
+            "slu" => T<float> * T<float> ^-> Chain.Type
+
+            "usolve" => (Matrix + Vector) ^-> Chain.Type
+
+            //arithmetic
+            "abs" => T<unit> ^-> Chain.Type
+
+            "add" => WithTypes AllValues (fun t -> (t *+ t) ^-> Chain.Type)
+
+            "cbrt" => !? T<bool> ^-> Chain.Type
+
+            "ceil" => T<unit> ^-> Chain.Type
+
+            "cube" => T<unit> ^-> Chain.Type
+
+            "divide" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "dotDivide" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "dotMultiply" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "dotPow" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "exp" => T<unit> ^-> Chain.Type
+
+            "fix" => T<unit> ^-> Chain.Type
+
+            "floor" => T<unit> ^-> Chain.Type
+
+            "gcd" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "hypot" => WithTypes AllValues (fun t -> !+ t ^-> Chain.Type)
+
+            "lcm" => WithTypes AllValues (fun t -> !+ t ^-> Chain.Type)
+
+            "log" => WithTypes AllValues (fun t -> !? t ^-> Chain.Type)
+
+            "log10" => T<unit> ^-> Chain.Type
+
+            "mod" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "multiply" => WithTypes AllValues (fun t -> t *+ t ^-> Chain.Type)
+
+            "norm" =>  WithTypes AllValues (fun t -> !? t ^-> Chain.Type)
+
+            "nthRoot" =>  WithTypes AllValues (fun t -> !? t ^-> Chain.Type)
+
+            "pow" =>  WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "round" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "sign" => T<unit> ^-> Chain.Type
+
+            "sqrt" => T<unit> ^-> Chain.Type
+
+            "square" => T<unit> ^-> Chain.Type
+
+            "subtract" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "unaryMinus" => T<unit> ^-> Chain.Type
+
+            "unaryPlus" => T<unit> ^-> Chain.Type
+
+            "xgcd" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            //bitwise
+            "bitAnd" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "bitNot" => T<unit> ^-> Chain.Type
+
+            "bitOr" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "bitXor" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "leftShift" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "rightArithShift" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "rightLogShift" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            //combinatorics
+            "bellNumbers" => T<unit> ^-> Chain.Type
+
+            "catalan" => T<unit> ^-> Chain.Type
+
+            "composition" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "stirlingS2" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            //complex
+            "arg" => T<unit> ^-> Chain.Type
+
+            "conj" => T<unit> ^-> Chain.Type
+
+            "im" => T<unit> ^-> Chain.Type
+
+            "re" => T<unit> ^-> Chain.Type
+
+            //geometry
+            "distance" => WithTypes Matrices (fun t -> t ^-> Chain.Type)
+
+            "intersect" => WithTypes Matrices (fun t -> t * t * t ^-> Chain.Type)
+
+            //logic
+            "and" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "not" => T<unit> ^-> Chain.Type
+
+            "or" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "xor" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            //matrix
+            "concat" => WithTypes Matrices (fun t -> !+ t ^-> Chain.Type)
+
+            "cross" => WithTypes Matrices (fun t -> t ^-> Chain.Type)
+
+            "det" => T<unit> ^-> Chain.Type
+
+            "diag" => WithTypes Numbers (fun t -> !? t * !? T<string> ^-> Chain.Type)
+
+            "dot" => WithTypes Matrices (fun t -> t ^-> Chain.Type)
+
+            "eye" => T<int> ^-> Chain.Type
+
+            "filter" => T<JavaScript.Function> + T<string> ^-> Chain.Type
+
+            "flatten" => T<unit> ^-> Chain.Type
+
+            "forEach" => T<JavaScript.Function> ^-> Chain.Type
+
+            "inv" => T<unit> ^-> Chain.Type
+
+            "kron" => WithTypes Matrices (fun t -> t ^-> Chain.Type)
+
+            "map" => T<JavaScript.Function> ^-> Chain.Type
+
+            "ones" => !+ T<int> ^-> Chain.Type
+
+            "partitionSelect" => T<int> * (T<string> + T<JavaScript.Function>) ^-> Chain.Type
+
+            "range" => T<string> * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? (T<int> + T<bigint>) * !? T<bool> ^-> Chain.Type
+
+            "reshape" => !| T<int> ^-> Chain.Type
+
+            "resize" => WithTypes Matrices (fun t -> t * !? (T<int> + T<string>) ^-> Chain.Type)
+
+            "size" => WithTypes AllValues (fun f -> f ^-> Chain.Type)
+
+            "sort" => T<string> + T<JavaScript.Function> ^-> Chain.Type
+
+            "squeeze" => T<unit> ^-> Chain.Type
+
+            "subset" => WithTypes Matrices (fun t -> (t + T<string>) * T<int> * !? (t + T<int>) * !? Index ^-> Chain.Type)
+
+            "trace" => T<unit> ^-> Chain.Type
+
+            "transpose" => T<unit> ^-> Chain.Type
+
+            "zeros" => !+ T<int> ^-> Chain.Type
+
+            //probability
+            "combination" => (T<int> + T<bigint>) ^-> Chain.Type
+
+            "factorial" => T<unit> ^-> Chain.Type
+
+            "gamma" => !? T<int> ^-> Chain.Type
+
+            "kldivergence" => WithTypes Matrices (fun t -> t ^-> Chain.Type)
+
+            "multinomial" => !+ (T<int> + T<bigint>) ^-> Chain.Type
+
+            "permutations" => (T<int> + T<bigint>) ^-> Chain.Type
+
+            "pickRandom" => !? T<int> * !? Vector ^-> Chain.Type
+
+            "random" => !? T<int> * !? T<int> ^-> Chain.Type
+
+            "randomInt" => !? T<int> * !? T<int> ^-> Chain.Type
+
+            //relational
+            "compare" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "deepEqual" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "equal" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "larger" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "largerEq" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "smaller" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "smallerEq" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            "unequal" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+
+            //special
+            "erf" => T<unit> ^-> Chain.Type
+            
+            //statistics
+            "mad" => T<unit> ^-> Chain.Type
+
+            "max" => T<unit> ^-> Chain.Type
+            
+            "mean" => T<unit> ^-> Chain.Type
+
+            "median" => T<unit> ^-> Chain.Type
+
+            "min" => T<unit> ^-> Chain.Type
+
+            "mode" => T<unit> ^-> Chain.Type
+
+            "prod" => T<unit> ^-> Chain.Type
+
+            "quantileSeq" => !+ (T<int> + T<bigint> + Vector) * !? T<bool> ^-> Chain.Type
+
+            "std" => !? T<string> ^-> Chain.Type
+            
+            "sum" => T<unit> ^-> Chain.Type
+
+            "var" => T<unit> ^-> Chain.Type 
+
+            //string
+            "format" => !? T<int> * !? T<JavaScript.Function> ^-> Chain.Type
+
+            "print" =>  WithTypes AllValues (fun t -> T<string> * !| t * !? T<int> ^-> Chain.Type)
+
+            //trigonometry
+            "acos" => T<unit> ^-> Chain.Type
+            
+            "acosh" => T<unit> ^-> Chain.Type
+            
+            "acot" => T<unit> ^-> Chain.Type
+            
+            "acoth" => T<unit> ^-> Chain.Type
+            
+            "acsc" => T<unit> ^-> Chain.Type
+            
+            "acsch" => T<unit> ^-> Chain.Type
+            
+            "asec" => T<unit> ^-> Chain.Type
+            
+            "asech" => T<unit> ^-> Chain.Type
+            
+            "asin" => T<unit> ^-> Chain.Type
+            
+            "asinh" => T<unit> ^-> Chain.Type
+            
+            "atan" => T<unit> ^-> Chain.Type
+            
+            "atan2" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
+            
+            "atanh" => T<unit> ^-> Chain.Type
+            
+            "cos" => T<unit> ^-> Chain.Type
+            
+            "cosh" => T<unit> ^-> Chain.Type
+            
+            "cot" => T<unit> ^-> Chain.Type
+            
+            "coth" => T<unit> ^-> Chain.Type
+            
+            "csc" => T<unit> ^-> Chain.Type
+            
+            "csch" => T<unit> ^-> Chain.Type
+            
+            "sec" => T<unit> ^-> Chain.Type
+            
+            "sech" => T<unit> ^-> Chain.Type
+            
+            "sin" => T<unit> ^-> Chain.Type
+            
+            "sinh" => T<unit> ^-> Chain.Type
+            
+            "tan" => T<unit> ^-> Chain.Type
+            
+            "tanh" => T<unit> ^-> Chain.Type
+
+            //unit
+            "to" => (Unit + Vector + Matrix) ^-> Chain.Type
+
+            //utils
+            "clone" => T<unit> ^-> Chain.Type
+
+            "isInteger" => T<unit> ^-> Chain.Type
+            
+            "isNaN" => T<unit> ^-> Chain.Type
+            
+            "isNegative" => T<unit> ^-> Chain.Type
+            
+            "isNumeric" => T<unit> ^-> Chain.Type
+            
+            "isPositive" => T<unit> ^-> Chain.Type
+            
+            "isPrime" => T<unit> ^-> Chain.Type
+            
+            "isZero" => T<unit> ^-> Chain.Type
+        ]
         |> ignore
 
     let Assembly =
@@ -696,6 +1032,7 @@ module Definition =
             ]
             Namespace "WebSharper.MathJS" [
                 MathClass
+                Index
                 Chain
                 Node
                 AccessorNode          
