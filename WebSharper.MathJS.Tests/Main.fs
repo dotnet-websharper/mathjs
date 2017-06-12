@@ -23,6 +23,13 @@ module Client =
                 equalMsg (MathJS.Math.Add(1., 2., 3.)) 6. "MathJS.Math.Add(1., 2., 3.) = 6"
             }
 
+            Test "MathJS add (unit)" {
+                let a = MathJS.Math.Unit("5 cm")
+                let b = MathJS.Math.Unit("10 cm")
+                let c = MathJS.Math.Unit("15 cm")
+                approxEqualMsg (MathJS.Math.Add(a, b).ToNumeric("cm")) (c.ToNumeric("cm")) "MathJS.Add(5 cm + 10 cm) = 15 cm"
+            }
+
             Test "MathJS add (complex)" {
                 let a = MathJS.Math.Complex("1.0 + 1.0i")
                 let b = MathJS.Math.Complex("1.0 + 1.0i")

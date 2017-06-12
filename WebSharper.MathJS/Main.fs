@@ -10,8 +10,45 @@ module Definition =
 
     let Matrix = Type.ArrayOf Vector
 
-    let Unit
-        = T<float> * T<string>
+    let Unit =
+        Class "Math.Unit"
+        |+> Instance [
+            Constructor (T<string> + (T<float> * T<string>))
+
+            "valueOf" =? T<string>
+
+            "clone" =? TSelf
+
+            "_isDerived" =? T<bool>
+
+            "hasBase" =? T<bool>
+
+            "equalBase" => T<bool>
+
+            "equals" => TSelf ^-> T<bool>
+
+            "multiply" => TSelf ^-> TSelf
+
+            "divide" => TSelf ^-> TSelf
+
+            "pow" => T<float> ^-> TSelf
+
+            "abs" => T<float> ^-> TSelf
+
+            "to" => TSelf ^-> TSelf
+
+            "toNumber" => TSelf ^-> T<float>
+
+            "toNumeric" => (TSelf ^-> T<float>) + (T<string> ^-> T<float>)
+
+            "toString" => T<unit> ^-> T<string>
+
+            "toJSON" => T<unit> ^-> T<obj>
+
+            "formatUnits" => T<unit> ^-> T<string>
+
+            "format" => T<obj> ^-> T<string>
+        ]
 
     let AllValues = 
         [|
@@ -20,7 +57,7 @@ module Definition =
             Matrix
             T<bigint>
             T<Complex>
-            Unit
+            Unit.Type
             T<string>
             T<bool>
         |]
@@ -39,7 +76,7 @@ module Definition =
             T<bool>
             T<bigint>
             T<Complex>
-            Unit
+            Unit.Type
         |]
         |> List.ofArray
         
@@ -346,7 +383,7 @@ module Definition =
 
             "string" => WithTypes AllValues (fun t -> t ^-> T<string>)
 
-            "unit" => WithTypes AllValues (fun t -> !? T<float> * T<string> ^-> t)
+            "unit" => WithTypes AllValues (fun t -> (t * T<string> ^-> Unit.Type) + (T<string> ^-> Unit.Type))
 
             //expression
             "compile" => T<string> ^-> T<obj>
@@ -1041,6 +1078,7 @@ module Definition =
                 MathClass
                 Index
                 Chain
+                Unit
                 Node
                 AccessorNode          
                 ArrayNode             
