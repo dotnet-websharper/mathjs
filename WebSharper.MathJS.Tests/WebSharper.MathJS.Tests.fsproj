@@ -54,7 +54,6 @@
     <Reference Include="System.Web.DynamicData.dll" />
     <Reference Include="System.Web.Entity.dll" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq.dll" />
   </ItemGroup>
   <Target Name="IncludeContent" BeforeTargets="Compile">
     <ItemGroup>

@@ -4,7 +4,6 @@ open IntelliFactory.Build
 let bt =
     BuildTool().PackageId("WebSharper.MathJS")
         .VersionFrom("WebSharper")
-        .WithFSharpVersion(FSharpVersion.FSharp30)
         .WithFramework(fun f -> f.Net40)
 
 let main =
@@ -14,7 +13,7 @@ let main =
         .References(fun r -> [])
 
 let tests =
-    bt.WebSharper.SiteletWebsite("WebSharper.MathJS.Tests")
+    bt.WithFramework(fun f -> f.Net45).WebSharper.SiteletWebsite("WebSharper.MathJS.Tests")
         .SourcesFromProject()
         .Embed([])
         .References(fun r ->
