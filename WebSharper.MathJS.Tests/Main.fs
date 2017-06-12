@@ -60,6 +60,11 @@ module Client =
                 equalMsg (MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |])) 3. "MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |]) = 3."
             }
 
+            Test "MathJS Eval with Scope" {
+                let scope = New ["a", 3. :> obj; "b", 4. :> obj]
+                equalMsg (MathJS.Math.Eval("a * b", scope).ToString()) "12" "Eval(a * b where a = 3, b = 4) = 12"
+            }
+
         }
 
 #if ZAFIR

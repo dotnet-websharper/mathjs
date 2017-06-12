@@ -48,7 +48,7 @@ module Definition =
         |> List.reduce (fun l r -> l + r)
 
     let Scope
-        = Type.ArrayOf (T<string> * (T<obj> + T<JavaScript.Function>))
+        = T<obj>
 
     let Expression
         = T<string>
@@ -353,7 +353,7 @@ module Definition =
 
             "compile" => !| T<string> ^-> !| T<obj>
 
-            "eval" => WithTypes AllValues (fun t -> T<string> + (T<string> * Scope) + (Type.ArrayOf T<string>) + (Type.ArrayOf T<string> * Scope) ^-> t)
+            "eval" => WithTypes AllValues (fun t -> (T<string> ^-> t) + (T<string> * Scope ^-> t) + (Type.ArrayOf T<string> ^-> t) + (Type.ArrayOf T<string> * Scope ^-> t))
 
             "help" => (T<JavaScript.Function> + T<string> + T<obj>) ^-> T<obj>
 
