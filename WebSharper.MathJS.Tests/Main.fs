@@ -10,7 +10,7 @@ module Client =
     open WebSharper.Testing
     open WebSharper.MathJS
     open System.Numerics
-
+    
     let Tests =
 
         TestCategory "General" {

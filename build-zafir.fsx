@@ -6,11 +6,20 @@ let bt =
         .VersionFrom("Zafir")
         .WithFramework(fun f -> f.Net40)
 
+let extens =
+    bt.Zafir.Library("WebSharper.MathJS.Extensions")
+        .SourcesFromProject()
+        .Embed([])
+        .References(fun r -> [])
+
 let main =
     bt.Zafir.Extension("WebSharper.MathJS")
         .SourcesFromProject()
         .Embed([])
-        .References(fun r -> [])
+        .References(fun r -> 
+            [
+                r.Project(extens)
+            ])
 
 let tests =
     bt.WithFramework(fun f -> f.Net45).Zafir.SiteletWebsite("WebSharper.MathJS.Tests")
@@ -24,6 +33,7 @@ let tests =
             ])
 
 bt.Solution [
+    extens
     main
     tests
 
@@ -36,5 +46,6 @@ bt.Solution [
                 Description = "WebSharper Extension for math.js 3.13.3"
                 RequiresLicenseAcceptance = true })
         .Add(main)
+        .Add(extens)
 ]
 |> bt.Dispatch
