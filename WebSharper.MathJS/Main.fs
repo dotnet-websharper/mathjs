@@ -452,7 +452,7 @@ module Definition =
 
             "mod" => WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "multiply" => WithTypes AllValues (fun t -> (t * t *+ t) ^-> t)
+            "multiply" => (WithTypes Numbers (fun t -> (t * t *+ t) ^-> t)) + (Vector * Vector *+ Vector ^-> T<float>) + (Matrix * Vector *+ Vector ^-> Vector) + (Matrix * Matrix *+ Matrix ^-> Matrix)
 
             "norm" =>  WithTypes AllValues (fun t -> t * !? t ^-> t)
 

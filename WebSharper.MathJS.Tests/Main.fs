@@ -72,6 +72,17 @@ module Client =
                 equalMsg (MathJS.Math.Eval("a * b", scope).ToString()) "12" "Eval(a * b where a = 3, b = 4) = 12"
             }
 
+            Test "MathJS factorial" {
+                equalMsg (MathJS.Math.Factorial(5.)) 120. "5! = 120"
+            }
+
+            Test "MathJS dot product" {
+                let a = [| 2.; 4.; 1. |]
+                let b = [| 2.; 2.; 3. |]
+                equalMsg (MathJS.Math.Dot(a, b)) 15. "Dot([2,4,1], [2,2,3]) = 15"
+                equalMsg (MathJS.Math.Multiply(a, b)) 15. "Multiply([2,4,1], [2,2,3]) = 15"
+            }
+
         }
 
 #if ZAFIR
