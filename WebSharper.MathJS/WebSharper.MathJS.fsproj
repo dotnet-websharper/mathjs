@@ -6,7 +6,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{93167253-1f52-46b0-911e-3dc03acc1cbf}</ProjectGuid>
     <WebSharperProject>Extension</WebSharperProject>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -47,7 +47,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <Import Project="../build/net45/$(Name).proj" />
+  <Import Project="../build/net40/$(Name).proj" />
   <ItemGroup>
     <Compile Include="Main.fs" />
   </ItemGroup>

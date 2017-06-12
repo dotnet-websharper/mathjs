@@ -4,8 +4,7 @@ open IntelliFactory.Build
 let bt =
     BuildTool().PackageId("Zafir.MathJS")
         .VersionFrom("Zafir")
-        //.WithFSharpVersion(FSharpVersion.FSharp41)
-        //.WithFramework(fun f -> f.Net45)
+        .WithFramework(fun f -> f.Net40)
 
 let main =
     bt.Zafir.Extension("WebSharper.MathJS")
@@ -14,7 +13,7 @@ let main =
         .References(fun r -> [])
 
 let tests =
-    bt.Zafir.SiteletWebsite("WebSharper.MathJS.Tests")
+    bt.WithFramework(fun f -> f.Net45).Zafir.SiteletWebsite("WebSharper.MathJS.Tests")
         .SourcesFromProject()
         .Embed([])
         .References(fun r ->
