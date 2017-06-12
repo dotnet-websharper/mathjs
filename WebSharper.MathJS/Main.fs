@@ -353,7 +353,7 @@ module Definition =
 
             "compile" => !| T<string> ^-> !| T<obj>
 
-            "eval" => WithTypes AllValues (fun t -> (T<string> * !? Scope) + (Type.ArrayOf T<string> * !? Scope) ^-> t)
+            "eval" => WithTypes AllValues (fun t -> T<string> + (T<string> * Scope) + (Type.ArrayOf T<string>) + (Type.ArrayOf T<string> * Scope) ^-> t)
 
             "help" => (T<JavaScript.Function> + T<string> + T<obj>) ^-> T<obj>
 
@@ -1021,6 +1021,13 @@ module Definition =
             "isPrime" => T<unit> ^-> Chain.Type
             
             "isZero" => T<unit> ^-> Chain.Type
+
+            //chain
+            "done" => T<unit> ^-> Chain.Type
+
+            "valueOf" => WithTypes AllValues (fun t -> T<unit> ^-> t)
+
+            "toString" => T<unit> ^-> T<string>
         ]
         |> ignore
 

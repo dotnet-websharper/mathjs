@@ -46,10 +46,19 @@ module Client =
                 equalMsg (MathJS.Math.Derivative("2x^2 + 3x + 4", "x").ToString()) "4 * x + 3" "Derivative(2x^2 + 3x + 4 with x) = 4 * x + 3"
             }
 
-            //Test "MathJS Chaining" {
-            //    let chain = MathJS.Math.Chain()
-            //    equalMsg (MathJS.Math.Chain().Add(4).Multiply(2).Done()) 14 ""
-            //}
+            Test "MathJS Chaining" {
+                let chain = MathJS.Math.Chain(4.).Add(5.).Multiply(10.).Done().ValueOf()
+                equalMsg chain (90. :> obj) "Chain(4).Add(5).Mulitply(10) = 90"
+            }
+
+            Test "MathJS Expressions" {
+                equalMsg (MathJS.Math.Eval("sqrt(3^2 + 4^2)").ToString()) "5" "Eval(sqrt(3^2 + 4^2)) = 5"
+                equalMsg (MathJS.Math.Eval("2 inch to cm").ToString()) "5.08 cm" "Eval(2 inch to cm) = 5.08 cm"
+            }
+
+            Test "MathJS Det" {
+                equalMsg (MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |])) 3. "MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |]) = 3."
+            }
 
         }
 
