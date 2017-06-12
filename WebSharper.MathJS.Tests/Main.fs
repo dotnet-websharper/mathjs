@@ -33,8 +33,15 @@ module Client =
             Test "MathJS add (complex)" {
                 let a = Complex(1., 1.)
                 let b = Complex(1., 1.)
-                let c = Complex(2., 2.)
+                let c = a + b
                 equalMsg (MathJS.Math.Add(a, b)) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
+            }
+
+            Test "MathJS add (bignum)" {
+                let a = BigInteger(100)
+                let b = BigInteger(200)
+                let c = a + b
+                equalMsg (MathJS.Math.Add(a, b)) c "MathJS.Math.Add(BigNumber(100), BigNumber(200)) = BigNumber(300)"
             }
 
             Test "MathJS Complex" {
