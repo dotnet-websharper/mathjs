@@ -1072,7 +1072,7 @@ module Definition =
         Assembly [
             Namespace "WebSharper.MathJS.Resources" [
                 (Resource "Js" "https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.13.3/math.js")
-                |> (fun r -> r.AssemblyWide())
+                |> AssemblyWide
             ]
             Namespace "WebSharper.MathJS" [
                 MathClass

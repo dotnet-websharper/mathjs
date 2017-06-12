@@ -6,19 +6,16 @@ let bt =
         .VersionFrom("Zafir")
         .WithFramework(fun f -> f.Net40)
 
-let extens =
-    bt.Zafir.Library("WebSharper.MathJS.Extensions")
-        .SourcesFromProject()
-        .Embed([])
-        .References(fun r -> [])
-
 let main =
     bt.Zafir.Extension("WebSharper.MathJS")
         .SourcesFromProject()
-        .Embed([])
+
+let extens =
+    bt.Zafir.Library("WebSharper.MathJS.Extensions")
+        .SourcesFromProject()
         .References(fun r -> 
             [
-                r.Project(extens)
+                r.Project(main)
             ])
 
 let tests =
@@ -28,13 +25,14 @@ let tests =
         .References(fun r ->
             [
                 r.Project(main)
+                r.Project(extens)
                 r.NuGet("Zafir.Testing").Latest(true).Reference()
                 r.NuGet("Zafir.UI.Next").Latest(true).Reference()
             ])
 
-bt.Solution [
-    extens
+bt.Solution [    
     main
+    extens
     tests
 
     bt.NuGet.CreatePackage()

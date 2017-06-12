@@ -50,6 +50,10 @@
   <Import Project="../build/net40/$(Name).proj" />
   <ItemGroup>
     <Compile Include="Main.fs" />
-    <Compile Include="Extensions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WebSharper.MathJS">
+      <HintPath>..\build\net40\WebSharper.MathJS.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

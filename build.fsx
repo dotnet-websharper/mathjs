@@ -6,19 +6,16 @@ let bt =
         .VersionFrom("WebSharper")
         .WithFramework(fun f -> f.Net40)
 
-let extens =
-    bt.WebSharper.Library("WebSharper.MathJS.Extensions")
-        .SourcesFromProject()
-        .Embed([])
-        .References(fun r -> [])
-
 let main =
     bt.WebSharper.Extension("WebSharper.MathJS")
         .SourcesFromProject()
-        .Embed([])
+
+let extens =
+    bt.WebSharper.Library("WebSharper.MathJS.Extensions")
+        .SourcesFromProject()
         .References(fun r -> 
             [
-                r.Project(extens)
+                r.Project(main)
             ])
 
 let tests =

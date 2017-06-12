@@ -31,9 +31,9 @@ module Client =
             }
 
             Test "MathJS add (complex)" {
-                let a = MathJS.Math.Complex("1.0 + 1.0i")
-                let b = MathJS.Math.Complex("1.0 + 1.0i")
-                let c = MathJS.Math.Complex("2.0 + 2.0i")
+                let a = Complex(1., 1.)
+                let b = Complex(1., 1.)
+                let c = Complex(2., 2.)
                 equalMsg (MathJS.Math.Add(a, b)) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
             }
 
