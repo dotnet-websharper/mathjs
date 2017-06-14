@@ -25,13 +25,14 @@ let tests =
         .References(fun r ->
             [
                 r.Project(main)
+                r.Project(extens)
                 r.NuGet("WebSharper.Testing").Reference()
                 r.NuGet("WebSharper.UI.Next").Reference()
             ])
 
 bt.Solution [
-    extens
     main
+    extens
     tests
 
     bt.NuGet.CreatePackage()
