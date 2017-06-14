@@ -33,19 +33,19 @@ module Client =
             Test "MathJS add (complex)" {
                 let a = Complex(1., 1.)
                 let b = Complex(1., 1.)
-                let c = a + b
-                equalMsg (MathJS.Math.Add(a, b)) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
+                let c = MathJS.Number((a + b))
+                equalMsg (MathJS.Math.Add(MathJS.Number(a), MathJS.Number(b))) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
             }
 
             Test "MathJS add (bignum)" {
                 let a = BigInteger(100)
                 let b = BigInteger(200)
-                let c = a + b
-                equalMsg (MathJS.Math.Add(a, b)) c "MathJS.Math.Add(BigNumber(100), BigNumber(200)) = BigNumber(300)"
+                let c = MathJS.Number((a + b))
+                equalMsg (MathJS.Math.Add(MathJS.Number(a), MathJS.Number(b))) c "MathJS.Math.Add(BigNumber(100), BigNumber(200)) = BigNumber(300)"
             }
 
             Test "MathJS Complex" {
-                isTrueMsg ((MathJS.Math.Complex("2.0 + 6.0i")).JS.Equals(MathJS.Math.Complex(2., "6."))) "Complex(\"2.0 + 6.0i\") = Complex(2., \"6.\")"
+                isTrueMsg ((MathJS.Number(MathJS.Math.Complex("2.0 + 6.0i"))).JS.Equals(MathJS.Number(MathJS.Math.Complex(2., "6.")))) "Complex(\"2.0 + 6.0i\") = Complex(2., \"6.\")"
             }
 
             Test "MathJS Simplify" {
@@ -71,7 +71,7 @@ module Client =
             }
 
             Test "MathJS Det" {
-                equalMsg (MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |])) 3. "MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |]) = 3."
+                equalMsg (MathJS.Math.Det(MathJS.Number([| [| 2.; 1. |]; [| 1.; 2. |] |]))) 3. "MathJS.Math.Det([| [| 2.; 1. |]; [| 1.; 2. |] |]) = 3."
             }
 
             Test "MathJS Eval with Scope" {
@@ -84,16 +84,20 @@ module Client =
             }
 
             Test "MathJS dot product" {
-                let a = [| 2.; 4.; 1. |]
-                let b = [| 2.; 2.; 3. |]
+                let a = MathJS.Number([| 2.; 4.; 1. |])
+                let b = MathJS.Number([| 2.; 2.; 3. |])
                 equalMsg (MathJS.Math.Dot(a, b)) 15. "Dot([2,4,1], [2,2,3]) = 15"
-                equalMsg (MathJS.Math.Multiply(a, b)) 15. "Multiply([2,4,1], [2,2,3]) = 15"
+                equalMsg (MathJS.Math.Multiply(a, b)) (MathJS.Number(15.)) "Multiply([2,4,1], [2,2,3]) = 15"
             }
 
             Test "MathJS cross procudt" {
-                let a = [| [| 1.; 2.; 3. |] |]
-                let b = [| [| 4. |]; [| 5. |]; [| 6. |] |]
-                equalMsg (MathJS.Math.Cross(a, b)) [| [| -3.; 6.; -3. |] |] "Cross([[1,2,3]],[[4],[5],[6]]) = [[-3,6,-3]]"
+                let a = MathJS.Number([| [| 1.; 2.; 3. |] |])
+                let b = MathJS.Number([| [| 4. |]; [| 5. |]; [| 6. |] |])
+                equalMsg (MathJS.Math.Cross(a, b)) (MathJS.Number([| [| -3.; 6.; -3. |] |])) "Cross([[1,2,3]],[[4],[5],[6]]) = [[-3,6,-3]]"
+            }
+
+            Test "MathJS insanity check" {
+                equalMsg (MathJS.Math.Add(MathJS.Number("5"), MathJS.Number(1.2), MathJS.Number(true))) (MathJS.Number(7.2)) "Add(\"5\", 1.2, true) = 7.2"
             }
         }
 

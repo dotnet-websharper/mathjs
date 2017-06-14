@@ -9,11 +9,37 @@ module Definition =
     let Vector = Type.ArrayOf T<float>
 
     let Matrix = Type.ArrayOf Vector
+    
+    let BaseNumber =
+        Class "MathJS.Number"
+        |+> Instance [
+            Constructor Vector?a
+            |> WithInline "$a"
+
+            Constructor Matrix?a
+            |> WithInline "$a"
+
+            Constructor T<float>?a
+            |> WithInline "$a"
+
+            Constructor T<bigint>?a
+            |> WithInline "$a"
+
+            Constructor T<Complex>?a
+            |> WithInline "$a"
+
+            Constructor T<string>?a
+            |> WithInline "$a"
+
+            Constructor T<bool>?a
+            |> WithInline "$a"
+        ]
 
     let Unit =
         Class "Math.Unit"
+        |=> Implements [BaseNumber]
         |+> Instance [
-            Constructor (T<string> + (T<float> * T<string>))
+            Constructor (T<string> + (BaseNumber * T<string>))
 
             "valueOf" =? T<string>
 
@@ -52,30 +78,24 @@ module Definition =
 
     let AllValues = 
         [|
+            BaseNumber.Type
             T<float>
-            Vector
-            Matrix
-            T<bigint>
-            T<Complex>
+            T<int>
             Unit.Type
-            T<string>
-            T<bool>
         |]
         |> List.ofArray
 
     let Matrices = 
         [|
-            Vector
-            Matrix
+            BaseNumber.Type
         |]
         |> List.ofArray
 
     let Numbers = 
         [|
+            BaseNumber.Type
             T<float>
-            T<bool>
-            T<bigint>
-            T<Complex>
+            T<int>
             Unit.Type
         |]
         |> List.ofArray
@@ -122,11 +142,11 @@ module Definition =
         Class "Parser"
         |+> Instance [
             "clear" => T<unit> ^-> T<unit>
-            "eval" => WithTypes AllValues (fun t -> T<string> ^-> t)
-            "get" => WithTypes AllValues (fun t -> T<string> ^-> t + T<JavaScript.Function>)
+            "eval" => T<string> ^-> BaseNumber
+            "get" => T<string> ^-> BaseNumber + T<JavaScript.Function>
             "getAll" => T<unit> ^-> T<obj>
             "remove" => T<string> ^-> T<unit>
-            "set" => WithTypes AllValues (fun t -> T<string> * t ^-> T<unit>)
+            "set" => T<string> * BaseNumber ^-> T<unit>
         ]
 
     let AccessorNode            = Class "math.expression.node.accessornode"
@@ -154,7 +174,7 @@ module Definition =
 
             "compile" => T<unit> ^-> T<obj>
 
-            "eval" => !? Scope ^-> T<obj>
+            "eval" => !? Scope ^-> BaseNumber
 
             "equals" => TSelf ^-> T<bool>
 
@@ -240,9 +260,9 @@ module Definition =
     ConstantNode
         |=> Implements [Node]
         |+> Instance [
-            Constructor (WithTypes AllValues (fun t -> t * !? T<string>))
+            Constructor (BaseNumber * !? T<string>)
 
-            "value" =? WithTypes AllValues (fun t -> t)
+            "value" =? BaseNumber
             "valueType" =? T<string>
         ]
         |> ignore
@@ -365,25 +385,25 @@ module Definition =
 
             "complex" => (T<unit> + T<float> + T<Complex> + T<string> + Vector ^-> T<Complex>) + (T<float> * T<string> ^-> T<Complex>)
 
-            "createUnit" => T<string> * (T<string> * Unit) * T<obj> ^-> Unit
+            "createUnit" => T<string> * (T<string> * Unit.Type) * T<obj> ^-> Unit.Type
 
             "fraction" => T<float> * T<float> ^-> T<float>
 
-            "fraction" => WithTypes Matrices (fun t -> t ^-> t)
+            "fraction" => WithTypes AllValues (fun t -> t ^-> t)
 
             "index" => Vector ^-> Vector
 
             "matrix" => !? Matrix * !? T<string> * !? T<string> ^-> Matrix
 
             "number" => WithTypes AllValues (fun t -> t * !? T<string> ^-> t)
-
+        
             "sparse" => WithTypes AllValues (fun t -> !? t * !? T<string> ^-> Matrix)
 
             "splitUnit" => Unit * Type.ArrayOf T<string> ^-> Vector
 
             "string" => WithTypes AllValues (fun t -> t ^-> T<string>)
 
-            "unit" => WithTypes AllValues (fun t -> (t * T<string> ^-> Unit.Type) + (T<string> ^-> Unit.Type))
+            "unit" => WithTypes AllValues (fun t -> t * T<string> ^-> Unit.Type) + (T<string> ^-> Unit.Type)
 
             //expression
             "compile" => T<string> ^-> T<obj>
@@ -693,7 +713,7 @@ module Definition =
             "tanh" => WithTypes AllValues (fun t -> t ^-> t)
 
             //unit
-            "to" => (Unit + Vector + Matrix) * (Unit + Vector + Matrix) ^-> (Unit + Vector + Matrix)
+            "to" => (Unit.Type + Vector + Matrix) * (Unit.Type + Vector + Matrix) ^-> (Unit.Type + Vector + Matrix)
 
             //utils
             "clone" => WithTypes AllValues (fun t -> t ^-> t)
@@ -1040,7 +1060,7 @@ module Definition =
             "tanh" => T<unit> ^-> Chain.Type
 
             //unit
-            "to" => (Unit + Vector + Matrix) ^-> Chain.Type
+            "to" => (Unit.Type + Vector + Matrix) ^-> Chain.Type
 
             //utils
             "clone" => T<unit> ^-> Chain.Type
@@ -1079,6 +1099,7 @@ module Definition =
                 Index
                 Chain
                 Unit
+                BaseNumber
                 Node
                 AccessorNode          
                 ArrayNode             
