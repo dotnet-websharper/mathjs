@@ -135,6 +135,15 @@ module Definition =
                 ]
         }
 
+    let DerivativeOption =
+        Pattern.Config "DerivativeOption" {
+            Required = []
+            Optional = 
+                [
+                    "simplify", T<bool>
+                ]
+        }
+
     let Chain =
         Class "math.type.Chain"
 
@@ -419,7 +428,7 @@ module Definition =
             "parser" => T<unit> ^-> Parser.Type
 
             //algebra
-            "derivative" => (Node + T<string>) * (SymbolNode + T<string>) * !? T<bool> ^-> Node
+            "derivative" => (Node + T<string>) * (SymbolNode + T<string>) * !? DerivativeOption ^-> Node
 
             "lsolve" => (Matrix + Vector) * (Matrix + Vector) ^-> (Matrix + Vector)
 
