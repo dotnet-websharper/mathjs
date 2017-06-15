@@ -1109,6 +1109,7 @@ module Definition =
                 Chain
                 Unit
                 BaseNumber
+                DerivativeOption
                 Node
                 AccessorNode          
                 ArrayNode             
