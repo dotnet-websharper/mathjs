@@ -379,9 +379,9 @@ module Definition =
             |> WithComment "Creates a typed function."
 
             //constuction
-            "bignumber" => WithTypes AllValues (fun t -> t ^-> T<bigint>)
+            "bignumber" => WithTypes AllValues (fun t -> (t ^-> T<bigint>) + (T<string> ^-> T<bigint>))
 
-            "boolean" => WithTypes AllValues (fun t -> t ^-> T<bool>)
+            "boolean" => WithTypes AllValues (fun t -> (t ^-> T<bool>) + T<string> ^-> T<bool>)
 
             "complex" => (T<unit> + T<float> + T<Complex> + T<string> + Vector ^-> T<Complex>) + (T<float> * T<string> ^-> T<Complex>)
 
@@ -391,7 +391,7 @@ module Definition =
 
             "fraction" => WithTypes AllValues (fun t -> t ^-> t)
 
-            "index" => Vector ^-> Vector
+            "index" => Vector ^-> Index
 
             "matrix" => !? Matrix * !? T<string> * !? T<string> ^-> Matrix
 

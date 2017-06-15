@@ -23,6 +23,10 @@ module Client =
                 equalMsg (MathJS.Math.Add(1., 2., 3.)) 6. "MathJS.Math.Add(1., 2., 3.) = 6"
             }
 
+            Test "MathJS add (int)" {
+                equalMsg (MathJS.Math.Add(1, 2, 3)) 6 "MathJS.Math.Add(1, 2, 3) = 6"
+            }
+
             Test "MathJS add (unit)" {
                 let a = MathJS.Math.Unit("5 cm")
                 let b = MathJS.Math.Unit("10 cm")
