@@ -135,7 +135,10 @@ module internal Extensions =
         static member op_Inequality(c1 : Complex, c2 : Complex) = X<bool>
 
         [<Inline "math.multiply($c1, $c2)">]
-        static member op_Mulitply(c1 : Complex, c2 : Complex) = X<Complex>
+        static member op_Multiply(c1 : Complex, c2 : Complex) = X<Complex>
+
+        [<Inline "math.subtract($c1, $c2)">]
+        static member op_Subtraction(c1 : Complex, c2 : Complex) = X<Complex>
 
         [<Inline "math.unaryMinus($c)">]
         static member op_UnaryNegation(c : Complex) = X<Complex>
