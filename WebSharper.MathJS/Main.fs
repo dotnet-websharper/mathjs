@@ -423,7 +423,7 @@ module Definition =
 
             "help" => (T<JavaScript.Function> + T<string> + T<obj>) ^-> T<obj>
 
-            "parse" =>(T<string> * !? Scope ^-> Node.Type) + (Type.ArrayOf T<string> * !? Scope ^-> Node.Type) + (Matrix ^-> Node.Type)
+            "parse" =>(T<string> * !? Scope ^-> Node.Type) + (Type.ArrayOf T<string> * !? Scope ^-> Node.Type) + (Matrix ^-> Node.Type) + (BaseNumber.Type ^-> Node.Type)
 
             "parser" => T<unit> ^-> Parser.Type
 
