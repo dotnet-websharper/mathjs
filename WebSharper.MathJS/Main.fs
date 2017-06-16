@@ -209,7 +209,7 @@ module Definition =
         ]
 
     AccessorNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (Node * IndexNode)
 
@@ -220,7 +220,7 @@ module Definition =
         |> ignore
 
     ArrayNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor !| Node
 
@@ -229,7 +229,7 @@ module Definition =
         |> ignore
 
     AssignmentNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor ((SymbolNode + AccessorNode) * IndexNode * Node)
             Constructor (SymbolNode * Node)
@@ -245,7 +245,7 @@ module Definition =
         |> ignore
 
     BlockNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (!| (Node + (Node * T<bool>)))
 
@@ -254,7 +254,7 @@ module Definition =
         |> ignore
 
     ConditionalNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (Node * Node * Node)
 
@@ -267,7 +267,7 @@ module Definition =
         |> ignore
 
     ConstantNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (BaseNumber * !? T<string>)
 
@@ -277,7 +277,7 @@ module Definition =
         |> ignore
 
     FunctionAssignmentNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (T<string> * !| T<string> * Node)
 
@@ -288,7 +288,7 @@ module Definition =
         |> ignore
 
     FunctionNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor ((Node + T<string>) * !| Node)
 
@@ -298,7 +298,7 @@ module Definition =
         |> ignore
 
     IndexNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (!| Node * !? T<bool>)
 
@@ -308,7 +308,7 @@ module Definition =
         |> ignore
 
     ObjectNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (T<string> * Node)
 
@@ -317,7 +317,7 @@ module Definition =
         |> ignore
 
     OperatorNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (T<string> * T<string> * !| Node)
 
@@ -328,7 +328,7 @@ module Definition =
         |> ignore
 
     ParenthesisNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor Node
 
@@ -337,7 +337,7 @@ module Definition =
         |> ignore
 
     RangeNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor (Node * Node * !? Node)
 
@@ -348,7 +348,7 @@ module Definition =
         |> ignore
 
     SymbolNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             Constructor T<string>
 
@@ -357,7 +357,7 @@ module Definition =
         |> ignore
 
     UpdateNode
-        |=> Implements [Node]
+        |=> Inherits Node
         |+> Instance [
             // not documented
         ]
@@ -777,8 +777,6 @@ module Definition =
     Chain
         |+> Instance [
             //algebra
-            "derivative" => T<unit> * (SymbolNode + T<string>) * !? T<bool> ^-> Chain.Type
-
             "lsolve" => (Matrix + Vector) ^-> Chain.Type
 
             "lup" => T<unit> ^-> Chain.Type
