@@ -11,7 +11,7 @@ module Definition =
     let Matrix = Type.ArrayOf Vector
     
     let BaseNumber =
-        Class "MathJS.Number"
+        Class "MathNumber"
         |+> Instance [
             Constructor Vector?a
             |> WithInline "$a"
@@ -20,6 +20,9 @@ module Definition =
             |> WithInline "$a"
 
             Constructor T<float>?a
+            |> WithInline "$a"
+
+            Constructor T<float32>?a
             |> WithInline "$a"
 
             Constructor T<bigint>?a
@@ -33,10 +36,34 @@ module Definition =
 
             Constructor T<bool>?a
             |> WithInline "$a"
+
+            Constructor T<int8>?a
+            |> WithInline "$a"
+
+            Constructor T<int16>?a
+            |> WithInline "$a"
+
+            Constructor T<int32>?a
+            |> WithInline "$a"
+
+            Constructor T<int64>?a
+            |> WithInline "$a"
+
+            Constructor T<uint8>?a
+            |> WithInline "$a"
+
+            Constructor T<uint16>?a
+            |> WithInline "$a"
+
+            Constructor T<uint32>?a
+            |> WithInline "$a"
+
+            Constructor T<uint64>?a
+            |> WithInline "$a"
         ]
 
     let Unit =
-        Class "Math.Unit"
+        Class "MathUnit"
         |=> Inherits BaseNumber
         |+> Instance [
             Constructor (T<string> + (BaseNumber * T<string>))
