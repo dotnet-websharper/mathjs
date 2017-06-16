@@ -37,7 +37,7 @@ module Definition =
 
     let Unit =
         Class "Math.Unit"
-        |=> Implements [BaseNumber]
+        |=> Inherits BaseNumber
         |+> Instance [
             Constructor (T<string> + (BaseNumber * T<string>))
 
