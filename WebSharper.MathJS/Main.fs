@@ -396,7 +396,7 @@ module Definition =
 
             "createUnit" => T<string> * (T<string> * Unit.Type) * T<obj> ^-> Unit.Type
 
-            "fraction" => T<float> * T<float> ^-> T<float>
+            "fraction" => (T<float> * T<float> ^-> T<float>) + (T<string> ^-> T<float>)
 
             "fraction" => WithTypes AllValues (fun t -> t ^-> t)
 
