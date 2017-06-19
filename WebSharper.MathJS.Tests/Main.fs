@@ -28,9 +28,9 @@ module Client =
             }
 
             Test "MathJS add (unit)" {
-                let a = MathJS.MathUnit("5 cm")
-                let b = MathJS.MathUnit("10 cm")
-                let c = MathJS.MathUnit("15 cm")
+                let a = MathJS.Math.Unit("5 cm")
+                let b = MathJS.Math.Unit("10 cm")
+                let c = MathJS.Math.Unit("15 cm")
                 approxEqualMsg (MathJS.Math.Add(a, b).ToNumeric("cm")) (c.ToNumeric("cm")) "MathJS.Add(5 cm + 10 cm) = 15 cm"
             }
 
@@ -40,6 +40,20 @@ module Client =
                 let c = MathNumber((a + b))
                 equalMsg (MathJS.Math.Add(MathNumber(a), MathNumber(b))) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
             }
+
+            Test "MathJS multiply (complex)" {
+                let a = Complex(1., 1.)
+                let b = Complex(1., 1.)
+                let c = MathNumber(a*b)
+                equalMsg (MathJS.Math.Multiply(MathNumber(a), MathNumber(b))) c "a*b"
+            }
+
+            //Test "MathJS multiply (bigint)" {
+            //    let a = BigInteger(100)
+            //    let b = BigInteger(100)
+            //    let c = MathNumber((a * b))
+            //    equalMsg (MathJS.Math.Multiply(MathNumber(a), MathNumber(b))) c "a*b"
+            //}
 
             Test "MathJS add (bignum)" {
                 let a = BigInteger(100)
