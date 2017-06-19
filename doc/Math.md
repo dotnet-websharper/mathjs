@@ -69,7 +69,7 @@ For vector operations in WebSharper we have to use the MathJS.Math functions and
     
     let addVector = Math.Add(MathNumber(myVector), MathNumber(myVector))
 
-<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Di"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Di"></iframe><div>
 
 ---
 
@@ -83,7 +83,7 @@ The same as for vectors, WebSharper grants a huge variety of Matrix operations a
     
     let addMatrix = Math.Add(MathNumber(myMatrix), MathNumber(myMatrix))
 
-<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DM"></iframe><div>
+<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DM"></iframe><div>
 
 ---
 
@@ -108,3 +108,21 @@ WebSharper allows you to calculate with units too. Most of the functions from Ma
 Calculation of expressions are not hard either. In this example we use the Math.Derivative with a TeX rendered output.
 
 <div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Cy"></iframe><div>
+
+---
+
+## Rendering expresions
+
+There are many ways to render your expression on the screen in WebSharper.
+
+### TeX
+
+<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DN"></iframe><div>
+
+### MathML
+
+<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Dy"></iframe><div>
+
+### Ascii Math
+
+<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000E1"></iframe><div>
