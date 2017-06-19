@@ -1,6 +1,18 @@
 # Math in WebSharper
 
-Higher level math is supported in WebSharper via the [MathJS](http://mathjs.org/) and [MathJax](https://www.mathjax.org/) JavaScript libraries.
+Higher level math is supported in WebSharper via the [MathJS](http://mathjs.org/) and [MathJax](https://www.mathjax.org/) JavaScript libraries. The usage of these libraries are the same as in JavaScript with some small changes. JavaScript doesn't mind letting any type in any function, but in WebSharper to use more than one type in a function we have to use the MathNumber wrapper.
+
+A little example:
+
+In JavaScript:
+```js
+math.add("5", 1.7, true);
+```
+
+In WebSharper:
+```fsharp
+Math.Add(MathNumber("5"), MathNumber(1.7), MathNumber(true))
+```    
 
 ## Bignumbers
 
@@ -23,7 +35,7 @@ Constructing BigInteger has two ways
 
 ## Complex number
 
-Just like BigInteger, Complex is a member of System.Numerics too, but JavaScript does not support them. The Complex type got a new constructor too:
+Just like BigInteger, Complex is a member of System.Numerics too, but JavaScript does not support them. To use the Complex type in our program we could construct it as we're used to it from .Net, but now we're able to do it with Math.Complex() too which is able to construct a Complex number by taking a string with the complex value.
 
     open System.Numerics
     open WebSharper.MathJS
@@ -40,7 +52,7 @@ Just like BigInteger, Complex is a member of System.Numerics too, but JavaScript
 
 ## Fraction
 
-The original float type in JavaScript has limitations with its precision, but it's solved with the Fraction type which has a much higher precision with its operations.
+The original float type in JavaScript has limitations with its precision, but it's solved with the Fraction type which has a much higher precision with its operations. To use this new Fraction, we have to call the Math.Fraction() constructor.
 
 We have many ways to create a Fraction, for example:
 
@@ -113,7 +125,7 @@ Calculation of expressions are not hard either. In this example we use the Math.
 
 ## Rendering expresions
 
-There are many ways to render your expression on the screen in WebSharper.
+There are many ways to render your expression on the screen with WebSharper. To do that we have to use MathJax as the following examples show:
 
 ### TeX
 

@@ -23,6 +23,13 @@ module Client =
                 equalMsg (MathJS.Math.Add(1., 2., 3.)) 6. "MathJS.Math.Add(1., 2., 3.) = 6"
             }
 
+            
+            Test "MathJS add (fraction)" {
+                let a = Math.Fraction(0.1)
+                let b = Math.Fraction(0.2)
+                equalMsg (Math.Fraction(a + b)) (Math.Fraction(0.3)) "MathJS.Math.Add(.1, .2) = .3"
+            }
+
             Test "MathJS add (int)" {
                 equalMsg (MathJS.Math.Add(1, 2, 3)) 6 "MathJS.Math.Add(1, 2, 3) = 6"
             }
@@ -41,12 +48,12 @@ module Client =
                 equalMsg (MathJS.Math.Add(MathNumber(a), MathNumber(b))) c "MathJS.Math.Add(Complex(1., 1.), Complex(1., 1.)) = Complex(2., 2.)"
             }
 
-            Test "MathJS multiply (complex)" {
-                let a = Complex(1., 1.)
-                let b = Complex(1., 1.)
-                let c = MathNumber(a*b)
-                equalMsg (MathJS.Math.Multiply(MathNumber(a), MathNumber(b))) c "a*b"
-            }
+            //Test "MathJS multiply (complex)" {
+            //    let a = Complex(1., 1.)
+            //    let b = Complex(1., 1.)
+            //    let c = MathNumber(a*b)
+            //    equalMsg (MathJS.Math.Multiply(MathNumber(a), MathNumber(b))) c "a*b"
+            //}
 
             //Test "MathJS multiply (bigint)" {
             //    let a = BigInteger(100)
