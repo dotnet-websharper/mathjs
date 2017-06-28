@@ -158,21 +158,3 @@ let myUnitFromString = Math.Unit("5 cm")
 Calculation of expressions are not hard either. In this example we use the Math.Derivative with a TeX rendered output.
 
 <div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Cy"></iframe><div>
-
----
-
-## Rendering expresions
-
-There are many ways to render your expression on the screen with WebSharper. To do that we have to use MathJax as the following examples show:
-
-### TeX
-
-<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DN"></iframe><div>
-
-### MathML
-
-<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Dy"></iframe><div>
-
-### Ascii Math
-
-<div style="width:100%;min-height:300px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000E1"></iframe><div>
