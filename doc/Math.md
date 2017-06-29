@@ -1,6 +1,6 @@
 # Math in WebSharper
 
-Higher level math is supported in WebSharper via the [MathJS](http://mathjs.org/) and [MathJax](https://www.mathjax.org/) JavaScript libraries. The usage of these libraries are the same as in `JavaScript` with some small changes. `JavaScript` doesn't mind letting any type in any function, but in WebSharper to use more than one type in a function we have to use the `MathNumber` wrapper.
+Higher level math is supported in WebSharper via the [MathJS](http://mathjs.org/) and [MathJax](https://www.mathjax.org/) JavaScript libraries. The usage of these libraries are the same as in `JavaScript` with some small changes. `JavaScript` would let you use any type in any function, but in WebSharper to use more than one type in a function we have to use the `MathNumber` wrapper.
 
 A little example:
 
@@ -14,7 +14,7 @@ In WebSharper:
 Math.Add(MathNumber("5"), MathNumber(1.7), MathNumber(true))
 ```
 
-Exception is when you only use either only `floats`, `ints`, or `Math.Units`
+Exception is when you use either only `floats`, `ints`, or `Math.Units`
 ```fsharp
 //Only floats
 Math.Add(1., 2., 3.)

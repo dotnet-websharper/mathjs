@@ -9,8 +9,8 @@ Note that if you use `MathNumber` as parameters, the return type will be wrapped
 
 ### Supported types in MathNumber()
 
-* float[]
-* float[][]
+* float\[\]
+* float\[\]\[\]
 * float
 * float32
 * System.Numerics.BigInteger
