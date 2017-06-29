@@ -23,5 +23,19 @@ Math.Add(MathNumber("5"), MathNumber(1.7), MathNumber(true))
 But when we use `MathNumber` as parameter, the return type will be `MathNumber` too.
 
 There are expections when we don't have to use the `MathNumber` wrapper:
-* If every parameter is a float or int (most commonly used types in math)
-* Some functions where only Vectors or Matrices are accepted
+- If every parameter is a float or int (most commonly used types in math)
+- Some functions where only Vectors or Matrices are accepted
+
+## Operations
+
+With MathJS WebSharper allows you to use the `System.Numerics.Biginteger` (`bigint`) and the `System.Numerics.Complex` types' own .Net operations and functions. For example:
+
+```fsharp
+//When you'd write
+Math.Add(MathNumber(Complex(5., 2.)), MathNumber(Complex(3., 1.)))
+
+//You can just use the (+) operator
+Complex(5., 2.) + Complex(3., 1.)
+```
+
+The same goes for `bigint`.
