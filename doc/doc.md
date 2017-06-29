@@ -22,9 +22,10 @@ Math.Add(MathNumber("5"), MathNumber(1.7), MathNumber(true))
 ```
 
 There are exceptions when we don't have to use the `MathNumber` wrapper:
-- If every parameter is a float or int (most commonly used types in math)
-- If every parameter is a Math.Unit type.
-- Some functions where only Vectors or Matrices are accepted
+
+* If every parameter is a `float` or `int` (most commonly used types in math)
+* If every parameter is a `Math.Unit` type.
+* Some functions where only Vectors or Matrices are accepted
 
 ## Operations
 
@@ -41,4 +42,8 @@ Complex(5., 2.) + Complex(3., 1.)
 Complex.Log10(Complex(5., 2.))
 ```
 
-The same goes for `bigint`.
+The same goes for `bigint` and the other types.
+
+## Chaining
+
+Chaining works the same way as before. The same rules applies with the `MathNumber`, if the chained value is an `int`, `float` or `Math.Unit` then the wrapping isn't needed. `Chain` has every function from the `Math` class.
