@@ -24,6 +24,7 @@ But when we use `MathNumber` as parameter, the return type will be `MathNumber` 
 
 There are expections when we don't have to use the `MathNumber` wrapper:
 - If every parameter is a float or int (most commonly used types in math)
+- If every parameter is a Math.Unit type.
 - Some functions where only Vectors or Matrices are accepted
 
 ## Operations
@@ -36,6 +37,9 @@ Math.Add(MathNumber(Complex(5., 2.)), MathNumber(Complex(3., 1.)))
 
 //You can just use the (+) operator
 Complex(5., 2.) + Complex(3., 1.)
+
+//Or we could use the Complex methods
+Complex.Log10(Complex(5., 2.))
 ```
 
 The same goes for `bigint`.
