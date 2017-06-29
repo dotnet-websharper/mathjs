@@ -7,6 +7,25 @@
 MathJS allows you to use many different types in a single function, but in F# it's harder with the types. To solve this problem we have introduced the `MathNumber` type. `MathNumber` has a constructor with every useable type from MathJS and serves as a wrapper for these functions.
 Note that if you use `MathNumber` as parameters, the return type will be wrapped in `MathNumber` as well.
 
+### Supported types in MathNumber()
+
+* float[]
+* float[][]
+* float
+* float32
+* System.Numerics.BigInteger
+* System.Numerics.Complex
+* string
+* bool
+* int8
+* int16
+* int32
+* int64
+* uint8
+* uint16
+* uint32
+* uint64
+
 ### Using MathNumber
 
 To use different types in a function, we have to wrap the parameters in `MathNumber`. For example:
