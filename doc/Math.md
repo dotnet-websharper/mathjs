@@ -4,12 +4,12 @@ Higher level math is supported in WebSharper via the [MathJS](http://mathjs.org/
 
 A little example:
 
-In JavaScript:
+In `JavaScript`:
 ```javascript
 math.add("5", 1.7, true);
 ```
 
-In WebSharper:
+In `WebSharper`:
 ```fsharp
 Math.Add(MathNumber("5"), MathNumber(1.7), MathNumber(true))
 ```

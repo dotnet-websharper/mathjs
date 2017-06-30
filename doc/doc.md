@@ -1,10 +1,11 @@
 # MathJS
 
-[MathJS](http://mathjs.org/) is a powerful math JavaScript library. It allows the usage of big numbers, complex numbers, units, fractions with high precision, vectors or matrices. In WebSharper using these types and functions are the same with a few exceptions.
+[MathJS](http://mathjs.org/) is a powerful math JavaScript library. It allows the usage of big numbers, complex numbers, units, fractions with high precision, vectors or matrices.
+In WebSharper using these types and functions are the same with a few exceptions.
 
 ## MathNumber
 
-MathJS allows you to use many different types in a single function, but in F# it's harder with the types. To solve this problem we have introduced the `MathNumber` type. `MathNumber` has a constructor with every useable type from MathJS and serves as a wrapper for these functions.
+MathJS allows you to use many different types in a single function, but in F# it's harder to achieve. To solve this problem we have introduced the `MathNumber` type. `MathNumber` has a constructor with every useable type from MathJS and serves as a wrapper for these functions.
 Note that if you use `MathNumber` as parameters, the return type will be wrapped in `MathNumber` as well.
 
 ### Supported types in MathNumber()
