@@ -50,7 +50,7 @@ Operations with these numbers are possible with the .Net way:
 let addBignum = myBignum + myBignum //Math.Add(MathNumber(myBigint), MathNumber(myBigint))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%;overflow:hidden" src="http://test2.try.websharper.com/embed/setr/0000DE"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%;overflow:hidden" src="https://try.websharper.com/embed/setr/0000E3"></iframe><div>
 
 ---
 
@@ -74,7 +74,7 @@ After constructing the numbers, we can use them as we're used to it:
 let addComplex = myComplex + myComplex //Math.Add(MathNumber(myComplex), MathNumber(myComplex))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DH"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Ds"></iframe><div>
 
 ---
 
@@ -99,7 +99,7 @@ let fraction3 = Math.Fraction(0.5)
 
 After 
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DJ"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dt"></iframe><div>
 
 ---
 
@@ -115,7 +115,7 @@ let myVector = [| 1.; 2.; 3. |]
 let addVector = Math.Add(MathNumber(myVector), MathNumber(myVector))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Di"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dz"></iframe><div>
 
 ---
 
@@ -131,7 +131,7 @@ let myMatrix = [| [| 1.; 2. |]; [| 3.; 4. |] |]
 let addMatrix = Math.Add(MathNumber(myMatrix), MathNumber(myMatrix))
 ```
 
-<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DM"></iframe><div>
+<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dy"></iframe><div>
 
 ---
 
@@ -149,14 +149,14 @@ let myUnit = Math.Unit(5, "cm")
 let myUnitFromString = Math.Unit("5 cm")
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000DO"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dr"></iframe><div>
 
 ---
 
 ## An example for expressions
 
-There are many functions in `Math.` that calculates an expression, solves a problem. In this example we'll use the `Math.Derivative` function to get a `Node` with the result in it. A `Node` then can be converted to a `String`, but with the [MathJax extension](./#docs/extensions/mathjax) we can render the result. To do that we have to set up `MathJax` to parse and render `TeX` formulas then by using the `Node`'s `ToTex()` function we convert the result into a `String` with the formula in `TeX` formatting.
+There are many functions in `Math.` that calculates an expression, solves a problem. In this example we'll use the `Math.Derivative` function to get a `Node` with the result in it. A `Node` then can be converted to a `String`, but with the [MathJax extension](https://github.com/intellifactory/websharper.mathjax/blob/master/doc/doc.md) we can render the result. To do that we have to set up `MathJax` to parse and render `TeX` formulas then by using the `Node`'s `ToTex()` function we convert the result into a `String` with the formula in `TeX` formatting.
 
 (Most of the functions don't result a `Node`, but they can be converted to `Node` by `Math.Parse()` or by other means. ([MathJax documentation](https://mathjax.org))
 
-<div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="http://test2.try.websharper.com/embed/setr/0000Cy"></iframe><div>
+<div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000E2"></iframe><div>
