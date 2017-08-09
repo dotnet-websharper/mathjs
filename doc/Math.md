@@ -50,7 +50,7 @@ Operations with these numbers are possible with the .Net way:
 let addBignum = myBignum + myBignum //Math.Add(MathNumber(myBigint), MathNumber(myBigint))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%;overflow:hidden" src="https://try.websharper.com/embed/setr/0000E3"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%;overflow:hidden" src="https://try.websharper.com/embed/setr/0000E3"></iframe></div>
 
 ---
 
@@ -74,7 +74,7 @@ After constructing the numbers, we can use them as we're used to it:
 let addComplex = myComplex + myComplex //Math.Add(MathNumber(myComplex), MathNumber(myComplex))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Ds"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Ds"></iframe></div>
 
 ---
 
@@ -99,7 +99,7 @@ let fraction3 = Math.Fraction(0.5)
 
 After 
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dt"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dt"></iframe></div>
 
 ---
 
@@ -115,7 +115,7 @@ let myVector = [| 1.; 2.; 3. |]
 let addVector = Math.Add(MathNumber(myVector), MathNumber(myVector))
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dz"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dz"></iframe></div>
 
 ---
 
@@ -131,7 +131,7 @@ let myMatrix = [| [| 1.; 2. |]; [| 3.; 4. |] |]
 let addMatrix = Math.Add(MathNumber(myMatrix), MathNumber(myMatrix))
 ```
 
-<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dy"></iframe><div>
+<div style="width:100%;min-height:450px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dy"></iframe></div>
 
 ---
 
@@ -149,7 +149,7 @@ let myUnit = Math.Unit(5, "cm")
 let myUnitFromString = Math.Unit("5 cm")
 ```
 
-<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dr"></iframe><div>
+<div style="width:100%;min-height:500px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000Dr"></iframe></div>
 
 ---
 
@@ -159,4 +159,4 @@ There are many functions in `Math.` that calculates an expression, solves a prob
 
 (Most of the functions don't result a `Node`, but they can be converted to `Node` by `Math.Parse()` or by other means. ([MathJax documentation](https://mathjax.org))
 
-<div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000E2"></iframe><div>
+<div style="width:100%;min-height:400px;position:relative"><iframe style="position:absolute;border:none;width:100%;height:100%" src="https://try.websharper.com/embed/setr/0000E2"></iframe></div>

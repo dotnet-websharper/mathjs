@@ -134,7 +134,8 @@ module internal Extensions =
         [<Inline "!$c1.equals($c2)">]
         static member op_Inequality(c1 : Complex, c2 : Complex) = X<bool>
 
-        static member op_Multiply(c1 : Complex, c2 : Complex) = MathJS.Math.Multiply(MathNumber(c1), MathNumber(c2))
+        [<Inline "math.multiply($c1, $c2)">]
+        static member op_Multiply(c1 : Complex, c2 : Complex) = X<Complex>
 
         [<Inline "math.subtract($c1, $c2)">]
         static member op_Subtraction(c1 : Complex, c2 : Complex) = X<Complex>
@@ -227,7 +228,7 @@ module internal Extensions =
         static member ModPow(v : bigint, e : bigint, m : bigint) = X<bigint>
 
         [<Inline "math.multiply($n1, $n2)">]
-        static member Mulitply(n1 : bigint, n2 : bigint) = X<bigint>
+        static member Multiply(n1 : bigint, n2 : bigint) = X<bigint>
 
         [<Inline "math.bignumber($s)">]
         static member Parse(s : string) = X<bigint>
