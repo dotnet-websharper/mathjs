@@ -124,6 +124,10 @@ module Client =
             Test "MathJS insanity check" {
                 equalMsg (MathJS.Math.Add(MathNumber("5"), MathNumber(1.2), MathNumber(true))) (MathNumber(7.2)) "Add(\"5\", 1.2, true) = 7.2"
             }
+            Test "Decimal sanity check" {
+                equalMsg (0.1m + 0.2m) 0.3m "0.1m + 0.2m = 0.3m"
+                equalMsg (1m * 1m) 1m "1m * 1m = 1m" 
+            }
         }
 
 #if ZAFIR

@@ -314,8 +314,31 @@ module internal Extensions =
     [<Proxy(typeof<System.Decimal>)>]
     type DecimalProxy =
 
-        [<Inline "window.WSDecimalMath.bignumber($v)">]
-        new (v : int32[]) = {}
+        (* javascript *
+        let m = window.WSDecimalMath
+        let n = m.bignumber
+        let reinterpret = function(x) {
+            return x >= 0 ? n(x) : m.chain('4294967296').add(x).done()
+        }
+        m.chain(reinterpret($hi)).multiply('4294967296')
+         .add(reinterpret($mid)).multiply('4294967296')
+         .add($lo)
+         .multiply($isNegative?0:-1)
+         .multiply(
+             m.chain(10)
+              .pow(-$scale)
+              .done()
+         )
+         *)
+
+        [<Inline "let m=window.WSDecimalMath,let n=m.bignumber,let reinterpret=function(i){return i>=0?n(i):m.chain('4294967296').add(i).done()},m.chain(reinterpret($hi)).multiply('4294967296').add(reinterpret($mid)).multiply('4294967296').add($lo).multiply($isNegative?0:-1).multiply(m.chain(10).pow(-$scale).done()).done()">]
+        new (lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) = {}
+
+        [<Inline>]
+        new (parts : int32[]) =
+            let sign = (parts.[3] &&& 0x80000000) <> 0;
+            let scale = byte ((parts.[3] >>> 16) &&& 0x7F); 
+            new DecimalProxy(parts.[0], parts.[1], parts.[2], sign, scale);
 
         [<Inline "window.WSDecimalMath.bignumber($v)">]
         new (v : decimal) = {}
@@ -337,9 +360,6 @@ module internal Extensions =
 
         [<Inline "window.WSDecimalMath.bignumber($v)">]
         new (v : uint64) = {}
-
-        [<Inline "window.WSDecimalMath.chain($hi).multiply(4294967295).add($mid).multiply(4294967295).add($lo).multiply($isNegative?0:-1).multiply(window.WSDecimalMath.chain(10).pow($scale).done()).done()">]
-        new (lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) = {}
 
         [<Inline "window.WSDecimalMath.abs($n)">]
         static member Abs(n : decimal) = X<decimal>
@@ -445,3 +465,10 @@ module internal Extensions =
 
         [<Inline "window.WSDecimalMath.unaryPlus($n)">]
         static member op_UnaryPlus(n : decimal) = X<decimal>
+    
+    [<WebSharper.Proxy "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions, \
+        FSharp.Core, Culture=neutral, \
+        PublicKeyToken=b03f5f7f11d50a3a">]
+    module private IntrinsicFunctionProxy =
+        [<Name "WebSharper.FSharp.Core.LanguagePrimitives.IntrinsicFunctions.MakeDecimal">]
+        let inline MakeDecimal lo med hi isNegative scale =  new System.Decimal(lo,med,hi,isNegative,scale)
