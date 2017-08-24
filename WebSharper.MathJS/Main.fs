@@ -396,14 +396,10 @@ module Definition =
             Constructor (T<string> + T<int> + Vector + Matrix)
         ]
 
-    let MathClass =
-        Class "math"
-        |+> Static [
+    let mathOps: CodeModel.IClassMember list =
+        [
             "config" => Config.Type ^-> T<unit>
             |> WithComment "Configure the math engine."
-
-            "create" => !? Config.Type ^-> TSelf
-            |> WithComment "Create and configure a math engine."
 
             "chain" => WithTypes AllValues (fun t -> !? t ^-> Chain.Type)
             |> WithComment "Chain functions."
@@ -769,7 +765,10 @@ module Definition =
             "isZero" => WithTypes AllValues (fun t -> t ^-> T<bool>)
             
             "typeof" => T<obj> ^-> T<string>
+        ]
 
+    let mathProps: CodeModel.IClassMember list =
+        [
             "E" =? T<float>
 
             "i" =? T<Complex>
@@ -800,6 +799,17 @@ module Definition =
 
             "version" =? T<string>   
         ]
+
+    let MathClass =
+        Class "math"
+        |+> Static [
+            "create" => !? Config.Type ^-> TSelf
+            |> WithComment "Create and configure a math engine."
+
+            "Instance" =? TSelf
+            |> WithGetterInline "math"
+        ]
+        |+> Instance (List.concat [mathOps; mathProps])
 
     Chain
         |+> Instance [
