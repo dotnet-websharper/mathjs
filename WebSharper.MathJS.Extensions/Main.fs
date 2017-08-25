@@ -312,25 +312,54 @@ module internal Extensions =
     [<Proxy(typeof<System.Decimal>)>]
     type DecimalProxy =
 
+        [<JavaScript>]
         static member CtorProxy(lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) : decimal =
             let m = WSDecimalMath
-            JS.Inline "
+            let n(x:int) = (WSDecimalMath.Number x) |> As<MathNumber>
+            let uint_sup = m.Chain(429496729).Multiply(10).Add(6).Done() |> As<MathNumber>
+            let reinterpret (x: int) = 
+                if x >= 0 then
+                    n(x)
+                else
+                    m.Chain(uint_sup).Add(x).Done() |> As<MathNumber>
+            let quotient =
+                m.Chain(10).Pow(- int scale).Done() |> As<MathNumber>
+            let value =
+                m.Chain(reinterpret hi)
+                    .Multiply(uint_sup)
+                    .Add(reinterpret mid)
+                    .Multiply(uint_sup)
+                    .Add(reinterpret lo)
+                    .Done() |> As<MathNumber>
+            let sign = if isNegative then -1 else 1
+            m.Chain(sign).Multiply(value).Multiply(quotient).Done() |> As<MathNumber>
+            |> As<decimal>
+            (*
+            JS.Inline ("
                 var m = $0;
                 var n = m.bignumber;
-                function reinterpret(x) {
-                    return x >= 0 ? n(x) : m.chain('4294967296').add(x).done();
+                var uint_sup = m.chain(429496729).multiply(10).add(6).done(); //4294967296
+                var reinterpret = function(x) {
+                    return x >= 0 ? n(x) : m.chain(uint_sup).add(x).done();
                 };
-                return m.chain(reinterpret($3)).multiply('4294967296')
-                 .add(reinterpret($2)).multiply('4294967296')
-                 .add($1)
-                 .multiply($4?0:-1)
-                 .multiply(
-                     m.chain(10)
+                var quotient =
+                    m.chain(10)
                       .pow(-$5)
-                      .done()
-                 )
-            " m lo mid hi isNegative scale
+                      .done();
+                var u_hi = reinterpret($3);
+                var u_mid = reinterpret($2)
+                var u_low = reinterpret($1);
+                var value = 
+                    m.chain(u_hi).multiply(uint_sup)
+                     .add(u_mid).multiply(uint_sup)
+                     .add(u_low)
+                     .done();
+                var minus = n($4?1:-1);
+                return m.chain(minus).multiply(value).multiply(quotient).done();
+            ", m, lo, mid, hi, isNegative, scale)
+            *)
 
+        [<JavaScript>]
         static member CtorProxy(parts : int32[]) =
             let sign = (parts.[3] &&& 0x80000000) <> 0;
             let scale = As<byte> ((parts.[3] >>> 16) &&& 0x7F); 
@@ -344,17 +373,19 @@ module internal Extensions =
 
         [<Inline>]
         static member private un<'T> (op: MathNumber -> MathNumber) (v: decimal): 'T = 
-            mathn v
+            DecimalProxy.mathn v
             |> op
             |> As<'T>
 
         [<Inline>]
         static member private bin (op: (MathNumber * MathNumber) -> MathNumber) (v1: decimal) (v2: decimal): 'T = 
-            op (mathn v1, mathn v2)
+            op (DecimalProxy.mathn v1, DecimalProxy.mathn v2)
             |> As<'T>
 
         [<Inline>]
-        static member private mathn (v: decimal): MathNumber = As<MathNumber> v
+        static member private mul (op: (MathNumber * MathNumber * MathNumber []) -> MathNumber) (v1: decimal) (v2: decimal): 'T = 
+            op (DecimalProxy.mathn v1, DecimalProxy.mathn v2, [||])
+            |> As<'T>
 
         [<Inline>]
         static member CtorProxy(v : double) : decimal = WSDecimalMath.Bignumber(MathNumber(v)) |> As<decimal>
@@ -375,93 +406,104 @@ module internal Extensions =
         static member CtorProxy(v : uint64) : decimal = WSDecimalMath.Bignumber(MathNumber(v)) |> As<decimal>
 
         [<Inline>]
-        static member Abs(n : decimal) : decimal = un WSDecimalMath.Abs n
+        static member Abs(n : decimal) : decimal = DecimalProxy.un WSDecimalMath.Abs n
 
         [<Inline>]
-        static member Add(n1 : decimal, n2 : decimal) : decimal = bin WSDecimalMath.Add n1 n2
+        static member Add(n1 : decimal, n2 : decimal) : decimal = DecimalProxy.mul WSDecimalMath.Add n1 n2
 
         [<Inline>]
-        static member Compare(n1 : decimal, n2 : decimal) : int = bin WSDecimalMath.Compare n1 n2
+        static member Compare(n1 : decimal, n2 : decimal) : int = DecimalProxy.bin WSDecimalMath.Compare n1 n2
 
         [<Inline>]
-        member this.CompareTo(n : decimal) : int = bin WSDecimalMath.Compare this n
+        member this.CompareTo(n : decimal) : int = DecimalProxy.bin WSDecimalMath.Compare (this |> As<decimal>) n
 
         [<Inline>]
         member this.CompareTo(n : obj) :int =
-            JS.Inline "$0.compare($this,$n)" WSDecimalMath this n
+            let math = WSDecimalMath
+            JS.Inline ("$0.compare($this,$n)", math, this, n)
 
         [<Inline>]
-        static member Divide(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Divide n1 n2
+        static member Divide(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Divide n1 n2
 
         [<Inline>]
-        member this.Equals(n : decimal): bool = bin WSDecimalMath.Equal this n
+        member this.Equals(n : decimal): bool = DecimalProxy.bin WSDecimalMath.Equal (this |> As<decimal>) n
 
         [<Inline>]
-        static member Equals(a: decimal, b : decimal): bool = bin WSDecimalMath.Equal a b
+        static member Equals(a: decimal, b : decimal): bool = DecimalProxy.bin WSDecimalMath.Equal a b
 
         [<Inline>]
-        static member GreatestCommonDivisor(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Gcd n1 n2
+        static member GreatestCommonDivisor(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Gcd n1 n2
 
         [<Inline>]
-        static member Log(n : decimal): decimal = un WSDecimalMath.Log n
+        static member Log(n : decimal): decimal = DecimalProxy.un WSDecimalMath.Log n
 
         [<Inline>]
-        static member Log(n : decimal, b : decimal): decimal = bin WSDecimalMath.Log a b
+        static member Log(n : decimal, b : decimal): decimal = DecimalProxy.bin WSDecimalMath.Log n b
 
         [<Inline>]
-        static member Log10(n : decimal): decimal = un WSDecimalMath.Log10 n
+        static member Log10(n : decimal): decimal = DecimalProxy.un WSDecimalMath.Log10 n
 
         [<Inline>]
-        static member Max(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Max n1 n2
+        static member Max(n1 : decimal, n2 : decimal): decimal =
+            if n1 >= n2 then
+                n1
+            else
+                n2
 
         [<Inline>]
-        static member Min(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Min n1 n2
+        static member Min(n1 : decimal, n2 : decimal): decimal =
+            if n1 <= n2 then
+                n1
+            else
+                n2
 
         [<Inline>]
         static member ModPow(v : decimal, e : decimal, m : decimal): decimal =
-            JS.Inline "$0.mod($0.pow($1, $2), $3)" WSDecimalMath v e m
+            JS.Inline ("$0.mod($0.pow($1, $2), $3)", WSDecimalMath, v, e, m)
 
         [<Inline>]
-        static member Multiply(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Multiply n1 n2
+        static member Multiply(n1 : decimal, n2 : decimal): decimal = DecimalProxy.mul WSDecimalMath.Multiply n1 n2
 
         [<Inline>]
         static member Parse(s : string) = WSDecimalMath.Bignumber(MathNumber(s)) |> As<decimal>
 
         [<Inline>]
-        static member Pow(n1 : decimal, n2 : int32): decimal = bin WSDecimalMath.Pow n1 n2
+        static member Pow(n1 : decimal, n2 : int32): decimal = DecimalProxy.bin WSDecimalMath.Pow n1 (MathNumber(n2) |> As<decimal>)
 
         [<Inline>]
-        static member Remainder(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Mod n1 n2
+        static member Remainder(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Mod n1 n2
 
         [<Inline>]
-        static member Subtract(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Subtract n1 n2
-
+        static member Subtract(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Subtract n1 n2
+        (*
+        [<Inline>]
         override this.ToString() =
-            JS.Inline "$0.format($1)" WSDecimalMath this
+            let math = WSDecimalMath
+            JS.Inline ("$0.format($1)", math, this)
+        *)
+        [<Inline>]
+        static member op_Addition(n1 : decimal, n2 : decimal): decimal = DecimalProxy.Add (n1, n2)
 
         [<Inline>]
-        static member op_Addition(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Add n1 n2
+        static member op_BitwiseAnd(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.BitAnd n1 n2
 
         [<Inline>]
-        static member op_BitwiseAnd(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.BitAnd n1 n2
+        static member op_BitwiseOr(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.BitOr n1 n2
 
         [<Inline>]
-        static member op_BitwiseOr(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.BitOr n1 n2
-
-        [<Inline>]
-        static member op_Division(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Divide n1 n2
+        static member op_Division(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Divide n1 n2
 
         [<Inline>]
         static member op_Equality(n1 : decimal, n2 : decimal): bool = DecimalProxy.Equals (n1,n2)
 
         [<Inline>]
-        static member op_ExclusiveOr(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.BitXor n1 n2
+        static member op_ExclusiveOr(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.BitXor n1 n2
 
         [<Inline>]
         static member op_Inequality(n1 : decimal, n2 : decimal): bool = not <| DecimalProxy.Equals (n1,n2)
 
         [<Inline>]
-        static member op_Modulus(n1 : decimal, n2 : decimal): decimal = bin WSDecimalMath.Mod n1 n2
+        static member op_Modulus(n1 : decimal, n2 : decimal): decimal = DecimalProxy.bin WSDecimalMath.Mod n1 n2
 
         [<Inline>]
         static member op_Multiply(n1 : decimal, n2 : decimal): decimal = DecimalProxy.Multiply (n1, n2)
@@ -470,10 +512,10 @@ module internal Extensions =
         static member op_Subtraction(n1 : decimal, n2 : decimal) = DecimalProxy.Subtract (n1,n2)
 
         [<Inline>]
-        static member op_UnaryNegation(n : decimal): decimal = un WSDecimalMath.UnaryMinus n
+        static member op_UnaryNegation(n : decimal): decimal = DecimalProxy.un WSDecimalMath.UnaryMinus n
 
         [<Inline>]
-        static member op_UnaryPlus(n : decimal) : decimal = un WSDecimalMath.UnaryPlus n
+        static member op_UnaryPlus(n : decimal) : decimal = DecimalProxy.un WSDecimalMath.UnaryPlus n
 
     [<Proxy "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions, \
          FSharp.Core, Culture=neutral, \
