@@ -309,61 +309,42 @@ module internal Extensions =
     let WSDecimalMath: MathJS.Math =
         MathJS.Math.Create(Config(Number = "BigNumber", Precision = 29.))
 
+    [<JavaScript>]
+    let CreateDecimal(lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) : decimal =
+        let m = WSDecimalMath
+        let n(x:int) = (WSDecimalMath.Number x) |> As<MathNumber>
+        let uint_sup = m.Chain(429496729).Multiply(10).Add(6).Done() |> As<MathNumber>
+        let reinterpret (x: int) = 
+            if x >= 0 then
+                n(x)
+            else
+                m.Chain(uint_sup).Add(x).Done() |> As<MathNumber>
+        let quotient =
+            m.Chain(10).Pow(- int scale).Done() |> As<MathNumber>
+        let value =
+            m.Chain(reinterpret hi)
+                .Multiply(uint_sup)
+                .Add(reinterpret mid)
+                .Multiply(uint_sup)
+                .Add(reinterpret lo)
+                .Done() |> As<MathNumber>
+        let sign = if isNegative then -1 else 1
+        m.Chain(sign).Multiply(value).Multiply(quotient).Done() |> As<MathNumber>
+        |> As<decimal>
+
     [<Proxy(typeof<System.Decimal>)>]
+    [<Prototype(false)>]
     type DecimalProxy =
 
-        [<JavaScript>]
+        [<Inline>]
         static member CtorProxy(lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) : decimal =
-            let m = WSDecimalMath
-            let n(x:int) = (WSDecimalMath.Number x) |> As<MathNumber>
-            let uint_sup = m.Chain(429496729).Multiply(10).Add(6).Done() |> As<MathNumber>
-            let reinterpret (x: int) = 
-                if x >= 0 then
-                    n(x)
-                else
-                    m.Chain(uint_sup).Add(x).Done() |> As<MathNumber>
-            let quotient =
-                m.Chain(10).Pow(- int scale).Done() |> As<MathNumber>
-            let value =
-                m.Chain(reinterpret hi)
-                    .Multiply(uint_sup)
-                    .Add(reinterpret mid)
-                    .Multiply(uint_sup)
-                    .Add(reinterpret lo)
-                    .Done() |> As<MathNumber>
-            let sign = if isNegative then -1 else 1
-            m.Chain(sign).Multiply(value).Multiply(quotient).Done() |> As<MathNumber>
-            |> As<decimal>
-            (*
-            JS.Inline ("
-                var m = $0;
-                var n = m.bignumber;
-                var uint_sup = m.chain(429496729).multiply(10).add(6).done(); //4294967296
-                var reinterpret = function(x) {
-                    return x >= 0 ? n(x) : m.chain(uint_sup).add(x).done();
-                };
-                var quotient =
-                    m.chain(10)
-                      .pow(-$5)
-                      .done();
-                var u_hi = reinterpret($3);
-                var u_mid = reinterpret($2)
-                var u_low = reinterpret($1);
-                var value = 
-                    m.chain(u_hi).multiply(uint_sup)
-                     .add(u_mid).multiply(uint_sup)
-                     .add(u_low)
-                     .done();
-                var minus = n($4?1:-1);
-                return m.chain(minus).multiply(value).multiply(quotient).done();
-            ", m, lo, mid, hi, isNegative, scale)
-            *)
+            CreateDecimal(lo, mid, hi, isNegative, scale) 
 
         [<JavaScript>]
         static member CtorProxy(parts : int32[]) =
-            let sign = (parts.[3] &&& 0x80000000) <> 0;
-            let scale = As<byte> ((parts.[3] >>> 16) &&& 0x7F); 
-            System.Decimal(parts.[0], parts.[1], parts.[2], sign, scale);
+            let sign = (parts.[3] &&& 0x80000000) <> 0
+            let scale = As<byte> ((parts.[3] >>> 16) &&& 0x7F)
+            CreateDecimal(parts.[0], parts.[1], parts.[2], sign, scale) 
 
         [<Inline>]
         static member CtorProxy(v : decimal) : decimal = v

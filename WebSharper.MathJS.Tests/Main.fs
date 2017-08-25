@@ -127,9 +127,9 @@ module Client =
             }
 
             Test "Decimal sanity check" {
-                //equal ((0.1m).ToString()) "0.1"
+                equal ((0.1m).ToString()) "0.1"
                 equalMsg (0.1m + 0.2m) 0.3m "0.1m + 0.2m = 0.3m"
-                //equalMsg (1m * 1m) 1m "1m * 1m = 1m"
+                equalMsg (1m * 1m) 1m "1m * 1m = 1m"
             }
 
         }
