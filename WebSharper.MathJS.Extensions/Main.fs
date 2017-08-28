@@ -307,30 +307,27 @@ module internal Extensions =
 
     [<JavaScript>]
     let WSDecimalMath: MathJS.Math =
-        MathJS.Math.Create(Config(Number = "BigNumber", Precision = 29.))
+        MathJS.Math.Create(Config(Number = "BigNumber", Precision = 29., Predictable = true))
 
     [<JavaScript>]
     let CreateDecimal(lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) : decimal =
-        let m = WSDecimalMath
-        let n(x:int) = (WSDecimalMath.Number x) |> As<MathNumber>
-        let uint_sup = m.Chain(429496729).Multiply(10).Add(6).Done() |> As<MathNumber>
-        let reinterpret (x: int) = 
-            if x >= 0 then
-                n(x)
-            else
-                m.Chain(uint_sup).Add(x).Done() |> As<MathNumber>
-        let quotient =
-            m.Chain(10).Pow(- int scale).Done() |> As<MathNumber>
-        let value =
-            m.Chain(reinterpret hi)
-                .Multiply(uint_sup)
-                .Add(reinterpret mid)
-                .Multiply(uint_sup)
-                .Add(reinterpret lo)
-                .Done() |> As<MathNumber>
-        let sign = if isNegative then -1 else 1
-        m.Chain(sign).Multiply(value).Multiply(quotient).Done() |> As<MathNumber>
-        |> As<decimal>
+        let n(x:int) = (WSDecimalMath.Bignumber x) |> As<decimal>
+        if lo = 0 && hi = 0 && mid = 0 then
+            n 0
+        else
+            let uint_sup =
+                System.Decimal.Add(System.Decimal.Multiply((n 429496729), (n 10)), (n 6))
+            let reinterpret (x: int) = 
+                if x >= 0 then
+                    n(x)
+                else
+                    uint_sup + (n x)
+            let quotient =
+                WSDecimalMath.Pow((n 10 |> As<MathNumber>), WSDecimalMath.UnaryMinus((n <| int scale )|>As<MathNumber>)) |> As<decimal>
+            let value =
+                (((reinterpret hi) * uint_sup + reinterpret mid) * uint_sup + reinterpret lo)
+            let sign = if isNegative then (n -1) else (n 1)
+            sign * value * quotient
 
     [<Proxy(typeof<System.Decimal>)>]
     [<Prototype(false)>]

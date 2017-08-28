@@ -128,8 +128,74 @@ module Client =
 
             Test "Decimal sanity check" {
                 equal ((0.1m).ToString()) "0.1"
-                equalMsg (0.1m + 0.2m) 0.3m "0.1m + 0.2m = 0.3m"
+                equalMsg ((0.1m + 0.2m).ToString()) "0.3" "0.1m + 0.2m = 0.3m"
                 equalMsg (1m * 1m) 1m "1m * 1m = 1m"
+            }
+
+            let createConstituentCtorDesc (low, mid, high, (isNeg: bool), (scale: byte)) (value: decimal) =
+                sprintf "decimal(%i,%i,%i,%b,%i) = %s" low mid high isNeg (int scale) (value.ToString())
+
+            Test "Decimal constituent constructor test" {
+                equalMsg
+                    (System.Decimal(0,0,0,false,0uy))
+                    0m
+                    (createConstituentCtorDesc (0,0,0,false,0uy) 0m)
+                equalMsg
+                    (System.Decimal(0,0,0,false,27uy))
+                    0m
+                    (createConstituentCtorDesc (0,0,0,false,27uy) 0m)
+                equalMsg
+                    (System.Decimal(0,0,0,true,0uy))
+                    0m
+                    (createConstituentCtorDesc (0,0,0,true,0uy) 0m)
+                equalMsg
+                    (System.Decimal(1000000000,0,0,false,0uy))
+                    1000000000m
+                    (createConstituentCtorDesc (1000000000,0,0,false,0uy) 1000000000m)
+                equalMsg
+                    (System.Decimal(0,1000000000,0,false,0uy))
+                    4294967296000000000m
+                    (createConstituentCtorDesc (0,1000000000,0,false,0uy) 4294967296000000000m)
+                equalMsg
+                    (System.Decimal(0,0,1000000000,false,0uy))
+                    18446744073709551616000000000m
+                    (createConstituentCtorDesc (0,0,1000000000,false,0uy) 0m)
+                equalMsg
+                    (System.Decimal(1000000000,1000000000,1000000000,false,0uy))
+                    18446744078004518913000000000m
+                    (createConstituentCtorDesc (1000000000,1000000000,1000000000,false,0uy) 18446744073709551616000000000m)
+                equalMsg
+                    (System.Decimal(-1,-1,-1,false,0uy))
+                    79228162514264337593543950335m
+                    (createConstituentCtorDesc (-1,-1,-1,false,0uy) 79228162514264337593543950335m)
+                equalMsg
+                    (System.Decimal(-1,-1,-1,true,0uy))
+                    -79228162514264337593543950335m
+                    (createConstituentCtorDesc (-1,-1,-1,true,0uy) -79228162514264337593543950335m)
+                equalMsg
+                    (System.Decimal(-1,-1,-1,false,15uy))
+                    79228162514264.337593543950335m
+                    (createConstituentCtorDesc (-1,-1,-1,false,15uy) 79228162514264.337593543950335m)
+                equalMsg
+                    (System.Decimal(-1,-1,-1,false,15uy).ToString())
+                    "79228162514264.337593543950335"
+                    ((createConstituentCtorDesc (-1,-1,-1,false,15uy) 79228162514264.337593543950335m) + " (as string)")
+                equalMsg
+                    (System.Decimal(-1,-1,-1,false,28uy))
+                    7.9228162514264337593543950335m
+                    (createConstituentCtorDesc (-1,-1,-1,false,28uy) 7.9228162514264337593543950335m)
+                equalMsg
+                    (System.Decimal(2147483647,0,0,false,18uy))
+                    0.000000002147483647m
+                    (createConstituentCtorDesc (2147483647,0,0,false,18uy) 0.000000002147483647m)
+                equalMsg
+                    (System.Decimal(2147483647,0,0,false,28uy))
+                    0.0000000000000000002147483647m
+                    (createConstituentCtorDesc (2147483647,0,0,false,28uy) 0.0000000000000000002147483647m)
+                equalMsg
+                    (System.Decimal(2147483647,0,0,true,28uy))
+                    -0.0000000000000000002147483647m
+                    (createConstituentCtorDesc (2147483647,0,0,true,28uy) -0.0000000000000000002147483647m)
             }
 
         }
