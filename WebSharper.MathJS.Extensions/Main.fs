@@ -329,6 +329,15 @@ module internal Extensions =
             let sign = if isNegative then (n -1) else (n 1)
             sign * value * quotient
 
+    [<JavaScript>]
+    let CreateDecimalBits (bits : int32[]) =
+        if bits.Length = 4 then
+            let sign = (bits.[3] &&& 0x80000000) <> 0
+            let scale = As<byte> ((bits.[3] >>> 16) &&& 0x7F)
+            CreateDecimal(bits.[0], bits.[1], bits.[2], sign, scale) 
+        else
+           invalidArg "bits" "The length of the bits array is not 4"
+
     [<Proxy(typeof<System.Decimal>)>]
     [<Prototype(false)>]
     type DecimalProxy =
@@ -337,11 +346,9 @@ module internal Extensions =
         static member CtorProxy(lo: int32, mid: int32, hi: int32, isNegative: bool, scale: byte) : decimal =
             CreateDecimal(lo, mid, hi, isNegative, scale) 
 
-        [<JavaScript>]
-        static member CtorProxy(parts : int32[]) =
-            let sign = (parts.[3] &&& 0x80000000) <> 0
-            let scale = As<byte> ((parts.[3] >>> 16) &&& 0x7F)
-            CreateDecimal(parts.[0], parts.[1], parts.[2], sign, scale) 
+        [<Inline>]
+        static member CtorProxy(bits: int32[]): decimal =
+            CreateDecimalBits bits
 
         [<Inline>]
         static member CtorProxy(v : decimal) : decimal = v

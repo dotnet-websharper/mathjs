@@ -198,6 +198,48 @@ module Client =
                     (createConstituentCtorDesc (2147483647,0,0,true,28uy) -0.0000000000000000002147483647m)
             }
 
+            let createInt32ArrayCtorDesc (bits: int32[]) (expected:decimal) =
+                sprintf "decimal([|0x%X; 0x%X; 0x%X; 0x%X |]) = %s" (bits.[0]) (bits.[1]) (bits.[2]) (bits.[3]) (expected.ToString())
+
+            Test "Decimal int32[] ctor test" {
+                equalMsg
+                    (System.Decimal([| 0x0; 0x0; 0x0; 0x0 |]))
+                    0m
+                    (createInt32ArrayCtorDesc [| 0x0; 0x0; 0x0; 0x0 |] 0m)
+                equalMsg
+                    (System.Decimal([| 0x3B9ACA00; 0x0; 0x0; 0x0 |]))
+                    1000000000m
+                    (createInt32ArrayCtorDesc [| 0x3B9ACA00; 0x0; 0x0; 0x0 |] 1000000000m)
+                equalMsg
+                    (System.Decimal([| 0x0; 0x3B9ACA00; 0x0; 0x0 |]))
+                    4294967296000000000m
+                    (createInt32ArrayCtorDesc [| 0x0; 0x3B9ACA00; 0x0; 0x0 |] 4294967296000000000m)
+                equalMsg
+                    (System.Decimal([| 0x0; 0x0; 0x3B9ACA00; 0x0 |]))
+                    18446744073709551616000000000m
+                    (createInt32ArrayCtorDesc [| 0x0; 0x0; 0x3B9ACA00; 0x0 |] 18446744073709551616000000000m)
+                equalMsg
+                    (System.Decimal([| 0xFFFFFFFF; 0xFFFFFFFF; 0xFFFFFFFF; 0x0 |]))
+                    79228162514264337593543950335m
+                    (createInt32ArrayCtorDesc [| 0xFFFFFFFF; 0xFFFFFFFF; 0xFFFFFFFF; 0x0 |] 79228162514264337593543950335m)
+                equalMsg
+                    (System.Decimal([| 0xFFFFFFFF; 0xFFFFFFFF; 0xFFFFFFFF; 0x80000000 |]))
+                    -79228162514264337593543950335m
+                    (createInt32ArrayCtorDesc [| 0xFFFFFFFF; 0xFFFFFFFF; 0xFFFFFFFF; 0x80000000 |] -79228162514264337593543950335m)
+                equalMsg
+                    (System.Decimal([| 0xFFFFFFFF; 0x0; 0x0; 0x100000 |]))
+                    0.0000004294967295m
+                    (createInt32ArrayCtorDesc [| 0xFFFFFFFF; 0x0; 0x0; 0x100000 |] 0.0000004294967295m)
+                equalMsg 
+                    (System.Decimal([| 0xFFFFFFFF; 0x0; 0x0; 0x1C0000 |]))
+                    0.0000000000000000004294967295m
+                    (createInt32ArrayCtorDesc [| 0xFFFFFFFF; 0x0; 0x0; 0x1C0000 |] 0.0000000000000000004294967295m)
+                equalMsg
+                    (System.Decimal([| 0xF0000; 0xF0000; 0xF0000; 0xF0000 |]))
+                    18133887298.441562272235520m
+                    (createInt32ArrayCtorDesc [| 0xF0000; 0xF0000; 0xF0000; 0xF0000 |] 18133887298.441562272235520m)
+            }
+
         }
 
 #if ZAFIR
