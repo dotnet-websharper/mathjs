@@ -306,7 +306,7 @@ module internal Extensions =
         static member op_UnaryPlus(n : bigint) = X<bigint>
 
     [<JavaScript>]
-    let WSDecimalMath: MathJS.Math =
+    let WSDecimalMath: MathJS.MathInstance =
         MathJS.Math.Create(Config(Number = "BigNumber", Precision = 29., Predictable = true))
 
     [<JavaScript>]

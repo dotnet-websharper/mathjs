@@ -800,16 +800,26 @@ module Definition =
             "version" =? T<string>   
         ]
 
-    let MathClass =
-        Class "math"
+    let MathInstance =
+        Class "MathInstance"
         |+> Static [
             "create" => !? Config.Type ^-> TSelf
             |> WithComment "Create and configure a math engine."
-
-            "Instance" =? TSelf
-            |> WithGetterInline "math"
         ]
         |+> Instance (List.concat [mathOps; mathProps])
+
+    let MathClass =
+        Class "math"
+        |+> Static (
+            List.concat [
+                [
+                    "create" => !? Config.Type ^-> MathInstance.Type
+                    |> WithComment "Create and configure a math engine."
+                ]
+                mathOps
+                mathProps
+            ]
+        )
 
     Chain
         |+> Instance [
@@ -1140,6 +1150,7 @@ module Definition =
             ]
             Namespace "WebSharper.MathJS" [
                 MathClass
+                MathInstance
                 Index
                 Chain
                 Unit
