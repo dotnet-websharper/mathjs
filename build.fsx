@@ -3,7 +3,7 @@ open IntelliFactory.Build
 
 let bt =
     BuildTool().PackageId("WebSharper.MathJS")
-        .VersionFrom("WebSharper")
+        .VersionFrom("WebSharper", versionSpec = "(,4.0)")
         .WithFramework(fun f -> f.Net40)
 
 let main =
@@ -26,8 +26,8 @@ let tests =
             [
                 r.Project(main)
                 r.Project(extens)
-                r.NuGet("WebSharper.Testing").Reference()
-                r.NuGet("WebSharper.UI.Next").Reference()
+                r.NuGet("WebSharper.Testing").Version("(,4.0)").Reference()
+                r.NuGet("WebSharper.UI.Next").Version("(,4.0)").Reference()
             ])
 
 bt.Solution [

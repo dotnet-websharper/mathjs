@@ -2,16 +2,16 @@
 open IntelliFactory.Build
 
 let bt =
-    BuildTool().PackageId("Zafir.MathJS")
-        .VersionFrom("Zafir")
+    BuildTool().PackageId("WebSharper.MathJS")
+        .VersionFrom("WebSharper")
         .WithFramework(fun f -> f.Net40)
 
 let main =
-    bt.Zafir.Extension("WebSharper.MathJS")
+    bt.WebSharper4.Extension("WebSharper.MathJS")
         .SourcesFromProject()
 
 let extens =
-    bt.Zafir.Library("WebSharper.MathJS.Extensions")
+    bt.WebSharper4.Library("WebSharper.MathJS.Extensions")
         .SourcesFromProject()
         .References(fun r -> 
             [
@@ -19,15 +19,15 @@ let extens =
             ])
 
 let tests =
-    bt.WithFramework(fun f -> f.Net45).Zafir.SiteletWebsite("WebSharper.MathJS.Tests")
+    bt.WithFramework(fun f -> f.Net45).WebSharper4.SiteletWebsite("WebSharper.MathJS.Tests")
         .SourcesFromProject()
         .Embed([])
         .References(fun r ->
             [
                 r.Project(main)
                 r.Project(extens)
-                r.NuGet("Zafir.Testing").Latest(true).Reference()
-                r.NuGet("Zafir.UI.Next").Latest(true).Reference()
+                r.NuGet("WebSharper.Testing").Latest(true).Reference()
+                r.NuGet("WebSharper.UI.Next").Latest(true).Reference()
             ])
 
 bt.Solution [    
@@ -38,7 +38,7 @@ bt.Solution [
     bt.NuGet.CreatePackage()
         .Configure(fun c ->
             { c with
-                Title = Some "Zafir.MathJS"
+                Title = Some "WebSharper.MathJS"
                 LicenseUrl = Some "http://websharper.com/licensing"
                 ProjectUrl = Some "https://github.com/intellifactory/https://github.com/intellifactory/websharper.mathjs"
                 Description = "WebSharper Extension for math.js 3.13.3"
