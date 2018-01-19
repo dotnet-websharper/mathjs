@@ -2,7 +2,7 @@ namespace WebSharper.MathJS.Tests
 
 open WebSharper
 open WebSharper.Sitelets
-open WebSharper.UI.Next
+open WebSharper.UI
 
 [<JavaScript>]
 module Client =
@@ -241,31 +241,8 @@ module Client =
 
         }
 
-#if ZAFIR
+    [<SPAEntryPoint>]
     let RunTests() =
         Runner.RunTests [
             Tests ()
         ]
-#endif
-
-module Site =
-    open WebSharper.UI.Next.Server
-    open WebSharper.UI.Next.Html
-
-    [<Website>]
-    let Main =
-        Application.SinglePage (fun ctx ->
-            Content.Page(
-                Title = "WebSharper.MathJS Tests",
-                Body = [
-#if ZAFIR
-                    client <@ Client.RunTests() @>
-#else
-                    WebSharper.Testing.Runner.Run [
-                        System.Reflection.Assembly.GetExecutingAssembly()
-                    ]
-                    |> Doc.WebControl
-#endif
-                ]
-            )
-        )
