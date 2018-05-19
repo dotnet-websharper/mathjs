@@ -1,6 +1,7 @@
 /.vs/
 /*.suo
-/*.Tests/Content/
+**/Scripts/WebSharper/
+**/Content/WebSharper/
 /build/
 /*/bin/
 /*/obj/

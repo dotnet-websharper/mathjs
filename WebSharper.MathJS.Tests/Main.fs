@@ -2,7 +2,11 @@ namespace WebSharper.MathJS.Tests
 
 open WebSharper
 open WebSharper.Sitelets
-open WebSharper.UI
+
+module Server =
+    [<Rpc>]
+    let Add1ToDecimal (d: decimal) =
+        async { return d + 1m }    
 
 [<JavaScript>]
 module Client =
@@ -129,6 +133,9 @@ module Client =
                 equal ((0.1m).ToString()) "0.1"
                 equalMsg ((0.1m + 0.2m).ToString()) "0.3" "0.1m + 0.2m = 0.3m"
                 equalMsg (1m * 1m) 1m "1m * 1m = 1m"
+                isTrue (1m = 1m)
+                isTrue (1m < 2m)
+                isTrue (2m > 1m)
             }
 
             let createConstituentCtorDesc (low, mid, high, (isNeg: bool), (scale: byte)) (value: decimal) =
@@ -239,10 +246,27 @@ module Client =
                     (createInt32ArrayCtorDesc [| 0xF0000; 0xF0000; 0xF0000; 0xF0000 |] 18133887298.441562272235520m)
             }
 
+            Test "Decimal remoting"  {
+                let x = 18133887298.441562272235520m
+                let! res = Server.Add1ToDecimal x 
+                equal res (x + 1m) 
+            }
+
         }
 
-    [<SPAEntryPoint>]
     let RunTests() =
         Runner.RunTests [
             Tests ()
         ]
+
+module Site =
+    [<Website>]
+    let Main =
+        Application.SinglePage (fun ctx ->
+            Content.Page(
+                Title = "WebSharper.MathJS Tests",
+                Body = [
+                    ClientSide <@ Client.RunTests() @>
+                ]
+            )
+        )
