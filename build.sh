@@ -1,13 +1,7 @@
 #!/bin/bash
 
-set -e
+dotnet tool restore
 
-if [ "$OS" = "Windows_NT" ]; then
-    .paket/paket.exe restore -g build
-    .paket/paket.exe update -g wsbuild
-else
-    mono .paket/paket.exe restore -g build
-    mono .paket/paket.exe update -g wsbuild
-fi
+dotnet paket update -g wsbuild --no-install
 
-exec paket-files/wsbuild/github.com/dotnet-websharper/build-script/WebSharper.Fake.sh "$@"
+. paket-files/wsbuild/github.com/dotnet-websharper/build-script/build.sh "$@"
