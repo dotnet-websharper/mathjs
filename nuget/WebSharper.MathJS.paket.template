@@ -18,4 +18,3 @@ files
     ../WebSharper.MathJS/WebSharper.MathJS.fsproj ==> src/
 dependencies
         WebSharper ~> LOCKEDVERSION:[3]
-        WebSharper.FSharp ~> LOCKEDVERSION:[3]
