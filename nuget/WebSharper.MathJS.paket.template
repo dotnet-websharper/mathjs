@@ -1,0 +1,21 @@
+type file
+id WebSharper.MathJS
+authors IntelliFactory
+projectUrl https://websharper.com/
+repositoryType git
+repositoryUrl https://github.com/dotnet-websharper/mathjs/
+licenseUrl https://github.com/dotnet-websharper/mathjs/blob/master/LICENSE.md
+iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
+description
+    WebSharper Extension for math.js 12.x
+tags
+    Web JavaScript F# C#
+files
+    ../WebSharper.MathJS/bin/Release/netstandard2.0/WebSharper.MathJS.dll ==> lib/netstandard2.0
+    ../WebSharper.MathJS/bin/Release/netstandard2.0/WebSharper.MathJS.xml ==> lib/netstandard2.0
+    ../WebSharper.MathJS.Extensions/bin/Release/netstandard2.0/WebSharper.MathJS.Extensions.dll ==> lib/netstandard2.0
+    ../WebSharper.MathJS.Extensions/bin/Release/netstandard2.0/WebSharper.MathJS.Extensions.xml ==> lib/netstandard2.0
+    ../WebSharper.MathJS/WebSharper.MathJS.fsproj ==> src/
+dependencies
+        WebSharper ~> LOCKEDVERSION:[3]
+        WebSharper.FSharp ~> LOCKEDVERSION:[3]
