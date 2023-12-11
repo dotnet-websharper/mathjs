@@ -76,19 +76,19 @@ NUGET
     System.Windows.Extensions (4.7) - restriction: || (== net6.0) (&& (== netstandard2.0) (>= netcoreapp3.0))
       System.Drawing.Common (>= 4.7) - restriction: || (== net6.0) (&& (== netstandard2.0) (>= netcoreapp3.0))
   remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
-    WebSharper (7.0.5.377-beta3)
+    WebSharper (7.0.6.386-beta4)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
-    WebSharper.AspNetCore (7.0.5.377-beta3)
+    WebSharper.AspNetCore (7.0.6.386-beta4)
       Microsoft.AspNetCore.Authentication.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Hosting.Abstractions (>= 2.0)
       Microsoft.AspNetCore.Mvc.Abstractions (>= 2.0)
       System.Configuration.ConfigurationManager (>= 4.7)
-      WebSharper (7.0.5.377-beta3)
-    WebSharper.FSharp (7.0.5.377-beta3)
-      WebSharper (7.0.5.377-beta3)
-    WebSharper.Testing (7.0.5.377-beta3)
-      WebSharper (7.0.5.377-beta3)
+      WebSharper (7.0.6.386-beta4)
+    WebSharper.FSharp (7.0.6.386-beta4)
+      WebSharper (7.0.6.386-beta4)
+    WebSharper.Testing (7.0.6.386-beta4)
+      WebSharper (7.0.6.386-beta4)
 
 GROUP test
 NUGET
