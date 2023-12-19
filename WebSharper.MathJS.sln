@@ -1,8 +1,9 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.12
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.MathJS", "WebSharper.MathJS\WebSharper.MathJS.fsproj", "{93167253-1F52-46B0-911E-3DC03ACC1CBF}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS", "WebSharper.MathJS\WebSharper.MathJS.fsproj", "{93167253-1F52-46B0-911E-3DC03ACC1CBF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{81D4E1D1-E78E-4DCB-9365-9A96241C8E06}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,11 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.MathJS.Extensions", "WebSharper.MathJS.Extensions\WebSharper.MathJS.Extensions.fsproj", "{A944159C-6AE5-4A1D-B186-087B30DAEF81}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS.Extensions", "WebSharper.MathJS.Extensions\WebSharper.MathJS.Extensions.fsproj", "{A944159C-6AE5-4A1D-B186-087B30DAEF81}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.MathJS.Tests.Client", "WebSharper.MathJS.Tests.Client\WebSharper.MathJS.Tests.Client.fsproj", "{CB808E5B-3F22-4140-8936-28B1EB7D6BCA}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS.Tests.Client", "WebSharper.MathJS.Tests.Client\WebSharper.MathJS.Tests.Client.fsproj", "{CB808E5B-3F22-4140-8936-28B1EB7D6BCA}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.MathJS.Tests.Server", "WebSharper.MathJS.Tests.Server\WebSharper.MathJS.Tests.Server.fsproj", "{05E29547-9896-4F92-A017-1A5CAEF319BC}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS.Tests.Server", "WebSharper.MathJS.Tests.Server\WebSharper.MathJS.Tests.Server.fsproj", "{05E29547-9896-4F92-A017-1A5CAEF319BC}"
+EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.UI.Decimal", "WebSharper.UI.Decimal\WebSharper.UI.Decimal.fsproj", "{C1B15828-3D20-4E2B-AD78-321A455B86C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +45,10 @@ Global
 		{05E29547-9896-4F92-A017-1A5CAEF319BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05E29547-9896-4F92-A017-1A5CAEF319BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05E29547-9896-4F92-A017-1A5CAEF319BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,6 +11,7 @@ nuget WebSharper prerelease
 nuget WebSharper.FSharp prerelease
 nuget WebSharper.Testing prerelease
 nuget WebSharper.AspNetCore prerelease
+nuget WebSharper.UI prerelease
 
 group wsbuild
     git https://github.com/dotnet-websharper/build-script websharper50

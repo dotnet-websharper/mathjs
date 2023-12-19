@@ -1,0 +1,19 @@
+type file
+id WebSharper.UI.Decimal
+authors IntelliFactory
+projectUrl https://websharper.com/
+repositoryType git
+repositoryUrl https://github.com/dotnet-websharper/mathjs/
+licenseUrl https://github.com/dotnet-websharper/mathjs/blob/master/LICENSE.md
+iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
+description
+    WebSharper Extension for working with decimal and WebSharper.UI's combinator library
+tags
+    Web JavaScript F# C#
+files
+    ../WebSharper.UI.Decimal/bin/Release/netstandard2.0/WebSharper.UI.Decimal.dll ==> lib/netstandard2.0
+    ../WebSharper.UI.Decimal/bin/Release/netstandard2.0/WebSharper.UI.Decimal.xml ==> lib/netstandard2.0
+dependencies
+        WebSharper ~> LOCKEDVERSION:[3]
+        WebSharper.UI ~> LOCKEDVERSION:[3]
+        WebSharper.MathJS CURRENTVERSION
