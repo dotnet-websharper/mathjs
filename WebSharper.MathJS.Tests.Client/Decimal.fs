@@ -309,7 +309,9 @@ module Decimal =
                 equal (string 4.5m) "4.5"
                 equal (decimal "4.5") 4.5m
                 equal (int64 5.7m) 5L
+                equal (decimal 5L) 5m
                 equal (uint64 5.7m) 5UL
+                equal (decimal 5UL) 5m
             }
 
             Test "Decimal functions" {
