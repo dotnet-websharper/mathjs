@@ -1,5 +1,5 @@
 ﻿{
   "$schema": "https://websharper.com/wsconfig.schema.json",
-  "project": "library",
-  "outputDir": ""
+  "project": "spa",
+  "outputDir": "wwwroot/Scripts"
 }

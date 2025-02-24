@@ -294,6 +294,12 @@ module Decimal =
                     (createInt32ArrayCtorDesc [| 0xF0000; 0xF0000; 0xF0000; 0xF0000 |] 18133887298.441562272235520m)
             }
 
+            Test "Decimal constructors" {
+                equal (System.Decimal(5.6)) 5.6m
+                equal (System.Decimal(5)) 5m
+                equal (System.Decimal(5L)) 5m
+            }
+
             Test "Decimal conversions" {
                 equal (float 5.6m) 5.6
                 equal (int 5.6m) 5
@@ -302,6 +308,8 @@ module Decimal =
                 equal (decimal 5.7) 5.7m
                 equal (string 4.5m) "4.5"
                 equal (decimal "4.5") 4.5m
+                equal (int64 5.7m) 5L
+                equal (uint64 5.7m) 5UL
             }
 
             Test "Decimal functions" {

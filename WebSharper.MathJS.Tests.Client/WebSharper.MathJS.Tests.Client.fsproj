@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,8 +9,12 @@
     <Compile Include="Decimal.fs" />
     <Compile Include="BigInt.fs" />
     <Compile Include="Main.fs" />
-    <None Include="index.html" />
+    <Compile Include="Site.fs" />
+    <Compile Include="Startup.fs" />
+    <None Include="wwwroot/index.html" />
     <None Include="wsconfig.json" />
+    <None Include="vite.config.js" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebSharper.MathJS\WebSharper.MathJS.fsproj" />

@@ -26,9 +26,14 @@ open WebSharper.Testing
 open WebSharper.MathJS
 open System.Numerics
 
+[<JavaScript>]
 module Main =
 
-    [<JavaScript>]
+    let private addOne (c: IControlBody) =
+        let e = JS.Document.CreateElement("div")
+        JS.Document.QuerySelector("#main").AppendChild(e) |> ignore
+        c.ReplaceInDom(e)
+
     let RunTests runServerSide autoStart =
         if not autoStart then
             JavaScript.JS.Inline "QUnit.config.autostart = false";
@@ -39,9 +44,7 @@ module Main =
                 Decimal.Tests runServerSide
             |]
 
-        for (t: TestCategory) in tests do
-            QUnit.Module t?name
-            t?run()
+        Runner.RunTests tests |> addOne
 
     [<SPAEntryPoint>]
     let Main =
