@@ -119,8 +119,8 @@ let t =
             Attributes = [
                 AssemblyInfo.Company "IntelliFactory"
                 AssemblyInfo.Copyright "(c) IntelliFactory 2023"
-                AssemblyInfo.Title "https://github.com/dotnet-websharper/ui"
-                AssemblyInfo.Product "WebSharper UI"
+                AssemblyInfo.Title "https://github.com/dotnet-websharper/mathjs"
+                AssemblyInfo.Product "WebSharper math.js"
             ]
         }
     |> MakeTargets

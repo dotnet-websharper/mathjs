@@ -427,7 +427,6 @@ NUGET
       System.Xml.ReaderWriter (>= 4.3)
       System.Xml.XmlDocument (>= 4.3)
       System.Xml.XPath (>= 4.3)
-  remote: https://nuget.pkg.github.com/dotnet-websharper/index.json
     WebSharper (8.0.0.525-rc2)
       FSharp.Core (>= 6.0)
       System.Reflection.Emit.Lightweight (>= 4.7)
@@ -454,4 +453,4 @@ GROUP wsbuild
 
 GIT
   remote: https://github.com/dotnet-websharper/build-script
-     (31f766913d1e0a152a5d65b84940da0982374a69)
+     (a7b506f18c67bb036a16a9adee507c44aa9e5bbc)
