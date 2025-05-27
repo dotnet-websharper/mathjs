@@ -598,9 +598,9 @@ module Definition =
 
             "unit" =!> WithTypes AllValues (fun t -> t * T<string> ^-> Unit.Type) + (T<string> ^-> Unit.Type)
 
-            
+            "parse" =!> (!| T<string>) ^-> !| Node
 
-            "parse" =!> (T<string> + !| T<string>) ^-> Node
+            "parse" =!> (T<string>) ^-> Node
 
             // parser customization
 
