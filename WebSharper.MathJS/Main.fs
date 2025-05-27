@@ -600,7 +600,7 @@ module Definition =
 
             
 
-            "parse" =!> (T<string> + !| T<string>) ^-> T<obj>
+            "parse" =!> (T<string> + !| T<string>) ^-> Node
 
             // parser customization
 
@@ -781,6 +781,8 @@ module Definition =
 
             //matrix
             "apply" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> (BaseNumber)
+
+            "mapSlices" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> BaseNumber
 
             "column" =!> (BaseNumber) * T<int> ^-> (BaseNumber)
 
@@ -1269,6 +1271,8 @@ module Definition =
 
             //matrix
             "apply" => T<int> * T<JavaScript.Function> ^-> Chain.Type
+
+            "mapSlices" => T<int> * T<JavaScript.Function> ^-> Chain.Type
 
             "column" => T<int> ^-> Chain.Type
 
