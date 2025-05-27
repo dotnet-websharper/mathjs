@@ -574,6 +574,8 @@ module Definition =
             //construction
             "bignumber" =!> WithTypes AllValues (fun t -> (t ^-> T<bigint>) + (T<string> ^-> T<bigint>))
 
+            "bigint" =!> WithTypes AllValues (fun t -> (t ^-> T<bigint>) + (T<string> ^-> T<bigint>))
+
             "boolean" =!> WithTypes AllValues (fun t -> (t ^-> T<bool>) + T<string> ^-> T<bool>)
 
             "complex" =!> (T<unit> + T<float> + T<Complex> + T<string> + Vector ^-> T<Complex>) + (T<float> * T<string> ^-> T<Complex>)
@@ -780,8 +782,6 @@ module Definition =
             "xor" =!> WithTypes AllValues (fun t -> t * t ^-> t)
 
             //matrix
-            "apply" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> (BaseNumber)
-
             "mapSlices" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> BaseNumber
 
             "column" =!> (BaseNumber) * T<int> ^-> (BaseNumber)
@@ -1270,8 +1270,6 @@ module Definition =
             "xor" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
 
             //matrix
-            "apply" => T<int> * T<JavaScript.Function> ^-> Chain.Type
-
             "mapSlices" => T<int> * T<JavaScript.Function> ^-> Chain.Type
 
             "column" => T<int> ^-> Chain.Type
