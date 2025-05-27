@@ -104,6 +104,39 @@ module Definition =
             "fixPrefix", T<bool>
         ]
 
+    let BaseUnit = 
+        Pattern.Config "BaseUnit" {
+            Required = [
+                "dimensions", !|T<float>
+                "key", T<string>
+            ]
+            Optional = []
+        }
+
+    let UnitComponent =
+        let ComponentUnit =
+            Pattern.Config "ComponentUnit" {
+                Required = [
+                    "name", T<string>
+                    "base", T<string> 
+                    "prefixes", T<obj>
+                    "value", T<float>
+                    "offset", T<float>
+                    "dimensions", !|T<float>
+                ]
+                Optional = []
+            }
+
+        Pattern.Config "UnitComponent" {
+            Required = [
+                "power", T<int>
+                "prefix", T<string>
+                "unit", ComponentUnit.Type
+            ]
+            Optional = []
+        }
+        |=> Nested [ComponentUnit]
+
     let Unit =
         Class "MathUnit"
         |> importFromMathJS "Unit"
@@ -111,13 +144,23 @@ module Definition =
         |+> Instance [
             Constructor (T<string> + (BaseNumber * T<string>))
 
+            "units" =? !|UnitComponent
+
+            "dimensions" =? !|T<float>
+
+            "value" =? T<float>
+
+            "fixPrefix" =? T<bool>
+
+            "skipAutomaticSimplification" =? T<bool>
+
             "valueOf" =? T<string>
 
             "clone" =? TSelf
 
             "_isDerived" =? T<bool>
 
-            "hasBase" =? T<bool>
+            "hasBase" => !?(BaseUnit + T<string>) ^-> T<bool>
 
             "equalBase" => T<bool>
 
@@ -137,6 +180,8 @@ module Definition =
 
             "toNumeric" => (TSelf ^-> T<float>) + (T<string> ^-> T<float>)
 
+            "toSI" => T<unit> ^-> TSelf
+
             "toString" => T<unit> ^-> T<string>
 
             "toJSON" => T<unit> ^-> T<obj>
@@ -144,11 +189,29 @@ module Definition =
             "formatUnits" => T<unit> ^-> T<string>
 
             "format" => T<obj> ^-> T<string>
+
+            "simplify" => T<obj> ^-> TSelf
+
+            "splitUnit" => T<obj> ^-> !|TSelf
         ]
         |+> Static [
             "fromJSON" => UnitJSON ^-> TSelf
             "isValuelessUnit" => T<string> ^-> T<bool>
             "parse" => T<string> ^-> TSelf
+            "PREFIXES" => T<obj>
+            "BASE_DIMENSIONS" => !|T<string>
+            "BASE_UNITS" => T<obj>
+            "UNIT_SYSTEMS" => T<obj>
+            "UNITS" => T<obj>
+
+            "isValidAlpha" => T<string>?c ^-> T<bool>
+
+            "createUnit" => (T<string> + T<obj>)?obj * !?T<obj>?option ^-> T<obj>
+
+            "createUnitSingle" =>T<string>?name * (T<string> + T<obj> + TSelf)?definition ^-> T<obj>
+
+            "getUnitSystem" => T<unit> ^-> T<string>
+            "setUnitSystem" => T<string>?name ^-> T<unit>
         ]
 
     let Polar =
@@ -188,6 +251,7 @@ module Definition =
     let AllValues = 
         [|
             BaseNumber.Type
+            T<bigint>
             T<float>
             T<decimal>
             T<int>
@@ -209,6 +273,7 @@ module Definition =
             T<float>
             T<decimal>
             T<int>
+            T<bigint>
             T<Complex>
             Complex.Type
         ]
@@ -219,6 +284,7 @@ module Definition =
             T<float>
             T<decimal>
             T<int>
+            T<bigint>
             Unit.Type
             Complex.Type
             T<Complex>
@@ -240,6 +306,8 @@ module Definition =
             Required = []
             Optional =
                 [
+                    "relTol", T<float>
+                    "absTol", T<float>
                     "epsilon", T<float>
                     "matrix", T<string>
                     "number", T<string>
@@ -279,6 +347,7 @@ module Definition =
             "evaluate" => T<string> ^-> BaseNumber
             "get" => T<string> ^-> BaseNumber + T<JavaScript.Function>
             "getAll" => T<unit> ^-> T<obj>
+            "getAllAsMap" => T<unit> ^-> T<obj>
             "remove" => T<string> ^-> T<unit>
             "set" => T<string> * BaseNumber ^-> T<unit>
         ]
@@ -708,7 +777,7 @@ module Definition =
 
             "mod" =!> WithTypes AllValues (fun t -> t * t ^-> t)
 
-            "multiply" =!> (WithTypes Numbers (fun t -> (t * t *+ t) ^-> t)) + (Vector * Vector *+ Vector ^-> T<float>) + (Matrix * Vector *+ Vector ^-> Vector) + (Matrix * Matrix *+ Matrix ^-> Matrix)
+            "multiply" =!> (WithTypes Numbers (fun t -> (t * t *+ t) ^-> t)) + (Vector * Vector *+ Vector ^-> Vector) + (Matrix * Vector *+ Vector ^-> Vector) + (Matrix * Matrix *+ Matrix ^-> Matrix)
 
             "norm" =!>  WithTypes AllValues (fun t -> t * !? t ^-> t)
 
@@ -1542,7 +1611,9 @@ module Definition =
                 Index
                 Chain
                 UnitJSON
+                BaseUnit
                 Unit
+                UnitComponent
                 BaseNumber
                 Polar
                 Schur
