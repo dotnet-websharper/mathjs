@@ -311,6 +311,7 @@ module Definition =
                     "epsilon", T<float>
                     "matrix", T<string>
                     "number", T<string>
+                    "numberFallback", T<string>
                     "precision", T<float>
                     "predictable", T<bool>
                     "randomSeed", T<string>
