@@ -27,6 +27,7 @@ open WebSharper.JavaScript
 type M = WebSharper.MathJS.Math
 
 [<Proxy(typeof<Complex>)>]
+[<Type "$import(Complex, mathjs)">]
 type internal ComplexProxy =
 
     [<Inline>]

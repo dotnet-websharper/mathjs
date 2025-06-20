@@ -65,6 +65,7 @@ open Decimal
 
 [<Proxy(typeof<System.Decimal>)>]
 [<Prototype(false)>]
+[<Type "$import(BigNumber, mathjs)">]
 type internal DecimalProxy =
 
     [<Inline>]
