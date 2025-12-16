@@ -10,8 +10,10 @@ let main args =
     let builder = WebApplication.CreateBuilder(args)
     
     // Add services to the container.
-    builder.Services.AddWebSharper()
-        .AddWebSharperRemoting<WebSharper.MathJS.Tests.Client.Shared.API>(Site.implementedApi)
+    builder.Services.AddWebSharperServices()
+        .AddRemotingHandler<WebSharper.MathJS.Tests.Client.Shared.API>(Site.implementedApi)
+    |> ignore
+    builder.Services
         .AddAuthentication("WebSharper")
         .AddCookie("WebSharper", fun options -> ())
     |> ignore
