@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="Complex.fs" />
     <Compile Include="Decimal.fs" />
+    <Compile Include="MathNumber.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>

@@ -642,9 +642,9 @@ module Definition =
             |> WithComment "Creates a factory function"
 
             //construction
-            "bignumber" =!> WithTypes AllValues (fun t -> (t ^-> T<bigint>) + (T<string> ^-> T<bigint>))
+            "bignumber" =!> WithTypes AllValues (fun t -> (t ^-> BaseNumber) + (T<string> ^-> BaseNumber))
 
-            "bigint" =!> WithTypes AllValues (fun t -> (t ^-> T<bigint>) + (T<string> ^-> T<bigint>))
+            "bigint" =!> WithTypes AllValues (fun t -> (t ^-> BaseNumber) + (T<string> ^-> BaseNumber))
 
             "boolean" =!> WithTypes AllValues (fun t -> (t ^-> T<bool>) + T<string> ^-> T<bool>)
 

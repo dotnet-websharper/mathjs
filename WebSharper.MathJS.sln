@@ -23,6 +23,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS.Tests.Ser
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.UI.Decimal", "WebSharper.UI.Decimal\WebSharper.UI.Decimal.fsproj", "{C1B15828-3D20-4E2B-AD78-321A455B86C7}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "WebSharper.MathJS.Sample", "WebSharper.MathJS.Sample\WebSharper.MathJS.Sample.fsproj", "{E1F2A3B4-C5D6-4E7F-8A9B-0C1D2E3F4A5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1B15828-3D20-4E2B-AD78-321A455B86C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1F2A3B4-C5D6-4E7F-8A9B-0C1D2E3F4A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1F2A3B4-C5D6-4E7F-8A9B-0C1D2E3F4A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1F2A3B4-C5D6-4E7F-8A9B-0C1D2E3F4A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1F2A3B4-C5D6-4E7F-8A9B-0C1D2E3F4A5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
