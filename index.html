@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSharper.MathJS — sample</title>
+    <link rel="stylesheet" href="css/index.css" />
+    
+</head>
+<body>
+    <header class="app-header">
+        <div class="app-titles">
+            <h1>WebSharper.MathJS</h1>
+            <p>math.js bindings for F# — with <a href="https://websharper.com">WebSharper</a></p>
+        </div>
+        <a class="app-source" href="https://github.com/dotnet-websharper/mathjs">Source</a>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <header class="card-header">
+                <h2>High-precision values</h2>
+                <p>
+                    <code>Math.Bignumber</code> returns a <code>MathNumber</code>, so
+                    arithmetic goes through <code>Math.Add</code> /
+                    <code>Math.Multiply</code> and is exact. <code>Format()</code> gives
+                    a round-trippable math.js string, including for vectors.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${Sum}</p>
+                <p class="result">${Product}</p>
+                <p class="result">${Vector}</p>
+            </div>
+        </section>
+    </main>
+
+    <script type="text/javascript" src="Scripts/WebSharper.MathJS.Sample.min.js"></script>
+</body>
+</html>
