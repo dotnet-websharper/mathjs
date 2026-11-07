@@ -12,6 +12,7 @@ tags
     Web JavaScript F# C#
 files
     ../WebSharper.UI.Decimal/bin/Release/netstandard2.0/WebSharper.UI.Decimal.dll ==> lib/netstandard2.0
+    ../WebSharper.UI.Decimal/bin/Release/netstandard2.0/WebSharper.UI.Decimal.websharper ==> lib/netstandard2.0
     ../WebSharper.UI.Decimal/bin/Release/netstandard2.0/WebSharper.UI.Decimal.xml ==> lib/netstandard2.0
 dependencies
         WebSharper ~> LOCKEDVERSION:[3]

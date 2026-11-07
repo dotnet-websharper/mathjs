@@ -12,8 +12,10 @@ tags
     Web JavaScript F# C#
 files
     ../WebSharper.MathJS/bin/Release/netstandard2.0/WebSharper.MathJS.dll ==> lib/netstandard2.0
+    ../WebSharper.MathJS/bin/Release/netstandard2.0/WebSharper.MathJS.websharper ==> lib/netstandard2.0
     ../WebSharper.MathJS/bin/Release/netstandard2.0/WebSharper.MathJS.xml ==> lib/netstandard2.0
     ../WebSharper.MathJS.Extensions/bin/Release/netstandard2.0/WebSharper.MathJS.Extensions.dll ==> lib/netstandard2.0
+    ../WebSharper.MathJS.Extensions/bin/Release/netstandard2.0/WebSharper.MathJS.Extensions.websharper ==> lib/netstandard2.0
     ../WebSharper.MathJS.Extensions/bin/Release/netstandard2.0/WebSharper.MathJS.Extensions.xml ==> lib/netstandard2.0
     ../WebSharper.MathJS/WebSharper.MathJS.fsproj ==> src/
 dependencies
