@@ -2,7 +2,7 @@
 //
 // This file is part of WebSharper
 //
-// Copyright (c) 2008-2018 IntelliFactory
+// Copyright (c) 2008-2026 IntelliFactory
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License.  You may
@@ -86,8 +86,9 @@ type internal ComplexProxy =
     [<Inline>]
     static member Exp(c : Complex) = M.Exp(c |> As<WebSharper.MathJS.Complex>) |> As<Complex>
 
-    [<Inline "math.complex.fromPolar($r, $i)">]
-    static member FromPolarCoordinates(r : float, i : float) = X<Complex> // TODO
+    [<Inline>]
+    static member FromPolarCoordinates(r : float, i : float) =
+        WebSharper.MathJS.Complex.FromPolar(r, i) |> As<Complex>
 
     [<Inline>]
     static member Log(c : Complex) = M.Log(c |> As<WebSharper.MathJS.Complex>) |> As<Complex>
@@ -133,6 +134,11 @@ type internal ComplexProxy =
 
     [<Inline "$this.format($n)">]
     member x.ToString(n : string) = X<string>
+
+    /// Formats the value with the given number of significant digits, as
+    /// `math.complex(...).format(precision)` does.
+    [<Inline "$this.format($n)">]
+    member x.Format(n : int) = X<string>
 
     [<Inline>]
     static member ImaginaryOne = M.Complex(0, "1")

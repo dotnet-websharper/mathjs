@@ -2,7 +2,7 @@
 //
 // This file is part of WebSharper
 //
-// Copyright (c) 2008-2018 IntelliFactory
+// Copyright (c) 2008-2026 IntelliFactory
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you
 // may not use this file except in compliance with the License.  You may
@@ -69,7 +69,13 @@ module Decimal =
             Test "MathJS add (fraction)" {
                 let a = MathJS.Math.Fraction(0.1)
                 let b = MathJS.Math.Fraction(0.2)
-                equalMsg (MathJS.Math.Fraction(a + b)) (MathJS.Math.Fraction(0.3)) "MathJS.Math.Add(.1, .2) = .3"
+                equalMsg (MathJS.Math.Add(a, b).ToString()) (MathJS.Math.Fraction(0.3).ToString()) "MathJS.Math.Add(.1, .2) = .3"
+            }
+
+            Test "MathJS fraction parts" {
+                let f = MathJS.Math.Fraction(1, 3)
+                equalMsg (string (MathJS.Math.Num(f))) "1" "MathJS.Math.Num(1/3) = 1"
+                equalMsg (string (MathJS.Math.Den(f))) "3" "MathJS.Math.Den(1/3) = 3"
             }
 
             Test "MathJS add (int)" {

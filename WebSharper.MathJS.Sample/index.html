@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSharper.MathJS — sample</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%234f46e5'/%3E%3Ctext x='8' y='12' font-family='monospace' font-size='9' fill='white' text-anchor='middle'%3E%E2%88%91%3C/text%3E%3C/svg%3E" />
+    <script>
+        // Apply a previously chosen theme before first paint. Light is the
+        // default; the key is shared with Client.fs (themeStorageKey).
+        try {
+            var t = localStorage.getItem('websharper-mathjs-theme');
+            if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) { }
+    </script>
+    <link rel="stylesheet" href="css/index.css" />
+    <!-- ws-head -->
+</head>
+<body>
+    <header class="app-header">
+        <div class="app-titles">
+            <h1>WebSharper.MathJS</h1>
+            <p>
+                math.js <span class="version">${version}</span> bindings for F# — with
+                <a href="https://websharper.com">WebSharper</a>
+            </p>
+        </div>
+        <div class="app-actions">
+            <button class="btn theme-toggle" ws-onclick="ToggleTheme" title="Switch between the light and dark theme">
+                <span>${themeLabel}</span>
+            </button>
+            <a class="app-source" href="https://github.com/dotnet-websharper/mathjs">Source</a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="card">
+            <header class="card-header">
+                <h2>Evaluate an expression</h2>
+                <p>
+                    <code>Math.Evaluate</code> parses and evaluates an expression. The same
+                    expression tree can be inspected with <code>Math.Parse</code>,
+                    rewritten with <code>Math.Simplify</code> and differentiated with
+                    <code>Math.Derivative</code> (with respect to <code>x</code>).
+                    Expressions are evaluated with <code>x = 2</code>.
+                </p>
+            </header>
+            <div class="card-body">
+                <div class="row">
+                    <input class="input" type="text" ws-var="Expr" spellcheck="false" />
+                    <button class="btn" ws-onclick="EvaluateExpr">Evaluate</button>
+                </div>
+                <p class="result">${evalResult}</p>
+                <p class="result">${parsed}</p>
+                <p class="result">${simplified}</p>
+                <p class="result">${derivative}</p>
+                <p class="result">${chain}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card-header">
+                <h2>High-precision numbers and fractions</h2>
+                <p>
+                    <code>Math.Bignumber</code> returns a <code>MathNumber</code>, so
+                    arithmetic goes through <code>Math.Add</code> / <code>Math.Multiply</code>
+                    and is exact. <code>Math.Fraction</code> returns a typed
+                    <code>Fraction</code>; <code>Math.Num</code> / <code>Math.Den</code>
+                    expose its parts and <code>Math.Bernoulli</code> computes Bernoulli numbers.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${bignumber}</p>
+                <p class="result">${fraction}</p>
+                <p class="result">${bernoulli}</p>
+                <p class="result">${nullish}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card-header">
+                <h2>Units and physical constants</h2>
+                <p>
+                    <code>Math.Unit</code> keeps track of dimensions; <code>To</code>
+                    converts, <code>Math.ToBest</code> / <code>ToBest</code> picks the
+                    best prefix, and the physical constants are unit values.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${unitConvert}</p>
+                <p class="result">${unitBest}</p>
+                <p class="result">${speedOfLight}</p>
+                <p class="result">${planckConstant}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card-header">
+                <h2>Matrices</h2>
+                <p>
+                    <code>DenseMatrix</code> and <code>SparseMatrix</code> are the typed
+                    matrix classes; <code>Math.Det</code>, <code>Math.Trace</code> and
+                    <code>Math.Transpose</code> accept <code>MathNumber</code> values.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${matrix}</p>
+                <p class="result">${matrixContents}</p>
+                <p class="result">${determinant}</p>
+                <p class="result">${transpose}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card-header">
+                <h2>Decimal and complex numbers</h2>
+                <p>
+                    <code>WebSharper.MathJS.Extensions</code> maps <code>System.Decimal</code>
+                    and <code>System.Numerics.Complex</code> onto math.js, so the usual F#
+                    operators work with math.js' high precision.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${extensions}</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <header class="card-header">
+                <h2>Statistics, predicates and type checks</h2>
+                <p>
+                    The statistics functions work on <code>MathNumber</code> collections,
+                    while the <code>Is*</code> predicates, <code>TypeOf</code> and
+                    <code>IsFinite</code> / <code>IsBounded</code> inspect any value.
+                </p>
+            </header>
+            <div class="card-body">
+                <p class="result">${statistics}</p>
+                <p class="result">${predicates}</p>
+                <p class="result">${objects}</p>
+                <p class="result">${typeOf}</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="app-footer">
+        <span>Built with <a href="https://websharper.com">WebSharper</a></span>
+        <span class="dot">·</span>
+        <a href="https://mathjs.org">math.js</a>
+        <span class="dot">·</span>
+        <a href="https://github.com/dotnet-websharper/mathjs">source</a>
+    </footer>
+
+    <script type="text/javascript" src="Scripts/WebSharper.MathJS.Sample.min.js"></script>
+</body>
+</html>

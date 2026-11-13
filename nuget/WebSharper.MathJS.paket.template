@@ -7,7 +7,7 @@ repositoryUrl https://github.com/dotnet-websharper/mathjs/
 licenseUrl https://github.com/dotnet-websharper/mathjs/blob/master/LICENSE.md
 iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
 description
-    WebSharper Extension for math.js 12.x
+    WebSharper Extension for math.js 15.x
 tags
     Web JavaScript F# C#
 files

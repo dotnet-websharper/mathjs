@@ -1,0 +1,8 @@
+{
+  "name": "WebSharper.MathJS.Sample",
+  "version": "1.0.0",
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "mathjs": "^15.2.0"
+  }
+}

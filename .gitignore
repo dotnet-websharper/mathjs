@@ -18,3 +18,4 @@ websharper.log
 node_modules/
 Scripts/
 dist/
+*/build/
