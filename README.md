@@ -197,7 +197,7 @@ docs) under `lib/netstandard2.0`, plus the binding source.
 
 ## Deployment
 
-Pushes to `master` build the sample in Release and deploy `dist/` to GitHub
+Pushes to `main` build the sample in Release and deploy `dist/` to GitHub
 Pages via `.github/workflows/ghpages.yml`.
 
 ## Repository layout
