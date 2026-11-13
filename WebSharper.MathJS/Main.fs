@@ -40,7 +40,50 @@ module Definition =
     let Vector = !| T<float>
 
     let Matrix = !| Vector
-    
+
+    /// A fraction.js fraction (fraction.js 5 is bigint based), as returned by
+    /// `Math.Fraction`. `N`/`D`/`S` are JS `bigint` values.
+    let Fraction =
+        Class "Fraction"
+        |> importFromMathJS "Fraction"
+        |+> Instance [
+            "s" =? T<bigint>
+            "n" =? T<bigint>
+            "d" =? T<bigint>
+
+            "abs" => T<unit> ^-> TSelf
+            "neg" => T<unit> ^-> TSelf
+            "add" => TSelf ^-> TSelf
+            "sub" => TSelf ^-> TSelf
+            "mul" => TSelf ^-> TSelf
+            "div" => TSelf ^-> TSelf
+            "mod" => TSelf ^-> TSelf
+            "gcd" => TSelf ^-> TSelf
+            "lcm" => TSelf ^-> TSelf
+            "inverse" => T<unit> ^-> TSelf
+            "pow" => T<int> ^-> TSelf
+            "log" => T<float> ^-> TSelf
+            "ceil" => T<unit> ^-> TSelf
+            "floor" => T<unit> ^-> TSelf
+            "round" => T<unit> ^-> TSelf
+            "roundTo" => T<int> ^-> TSelf
+            "simplify" => !? T<float> ^-> TSelf
+            "clone" => T<unit> ^-> TSelf
+            "equals" => TSelf ^-> T<bool>
+            "lt" => TSelf ^-> T<bool>
+            "lte" => TSelf ^-> T<bool>
+            "gt" => TSelf ^-> T<bool>
+            "gte" => TSelf ^-> T<bool>
+            "compare" => TSelf ^-> T<int>
+            "divisible" => TSelf ^-> T<bool>
+            "valueOf" => T<unit> ^-> T<obj>
+            "toString" => T<unit> ^-> T<string>
+            "toFraction" => !? T<bool> ^-> T<string>
+            "toLatex" => !? T<obj> ^-> T<string>
+            "toContinued" => T<unit> ^-> !| T<int>
+            "toJSON" => T<unit> ^-> T<string>
+        ]
+
     let BaseNumber =
         Class "MathNumber"
         |+> Instance [
@@ -48,6 +91,9 @@ module Definition =
             |> WithInline "$a"
 
             Constructor Matrix?a
+            |> WithInline "$a"
+
+            Constructor Fraction?a
             |> WithInline "$a"
 
             Constructor T<float>?a
@@ -168,13 +214,15 @@ module Definition =
 
             "multiply" => TSelf ^-> TSelf
 
-            "divide" => TSelf ^-> TSelf
+            "divide" => TSelf ^-> (TSelf + T<float>)
 
             "pow" => T<float> ^-> TSelf
 
             "abs" => T<float> ^-> TSelf
 
-            "to" => TSelf ^-> TSelf
+            "to" => (TSelf + T<string>) ^-> TSelf
+
+            "toBest" => !? (T<string> + !| (T<string> + TSelf)) * !? T<obj> ^-> TSelf
 
             "toNumber" => TSelf ^-> T<float>
 
@@ -228,7 +276,7 @@ module Definition =
         |> importFromMathJS "Complex"
         |+> Static [
             "fromJson" => T<string> ^-> TSelf
-            "fromPolar" => BaseNumber * BaseNumber ^-> TSelf
+            "fromPolar" => (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type) * (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type) ^-> TSelf
             "compare" => TSelf * TSelf ^-> T<int>
         ]
         |+> Instance [
@@ -243,8 +291,8 @@ module Definition =
             "toVector" => T<unit> ^-> Vector
             "toJSON" => T<unit> ^-> T<string>
             "toPolar" => T<unit> ^-> Polar
-            "toString" => T<unit> ^-> TSelf
-            "format" => T<int> ^-> T<string>
+            "toString" => T<unit> ^-> T<string>
+            "format" => !? T<int> ^-> T<string>
 
         ]
 
@@ -256,6 +304,7 @@ module Definition =
             T<decimal>
             T<int>
             Unit.Type
+            Fraction.Type
             Complex.Type
             T<Complex>
         |]
@@ -275,6 +324,7 @@ module Definition =
             T<int>
             T<bigint>
             T<Complex>
+            Fraction.Type
             Complex.Type
         ]
 
@@ -286,11 +336,35 @@ module Definition =
             T<int>
             T<bigint>
             Unit.Type
+            Fraction.Type
             Complex.Type
             T<Complex>
         |]
         |> List.ofArray
         
+    /// Combinations accepted by the low-level `*Scalar` helpers.
+    let ScalarValues =
+        [
+            BaseNumber.Type
+            T<float>
+            T<decimal>
+            T<int>
+            T<bigint>
+            Fraction.Type
+            Complex.Type
+            T<Complex>
+            T<bool>
+        ]
+
+    /// Values accepted by `Math.Num`, `Math.Den` and `Math.Bernoulli`.
+    let FractionValues =
+        [
+            T<float>
+            T<bigint>
+            BaseNumber.Type
+            Fraction.Type
+        ]
+
     let WithTypes values f =
         List.map f values
         |> List.reduce (fun l r -> l + r)
@@ -334,15 +408,17 @@ module Definition =
             Required = []
             Optional = 
                 [
-                    "simplify", T<bool>
+                    ("simplify", T<bool>)
                 ]
         }
 
     let Chain =
-        Class "math.type.Chain"
+        Class "Chain"
+        |> importFromMathJS "Chain"
 
     let Parser =
         Class "Parser"
+        |> importFromMathJS "Parser"
         |+> Instance [
             "clear" => T<unit> ^-> T<unit>
             "evaluate" => T<string> ^-> BaseNumber
@@ -353,21 +429,21 @@ module Definition =
             "set" => T<string> * BaseNumber ^-> T<unit>
         ]
 
-    let AccessorNode            = Class "math.expression.node.accessornode"
-    let ArrayNode               = Class "math.expression.node.arraynode"
-    let AssignmentNode          = Class "math.expression.node.assignmentnode"
-    let BlockNode               = Class "math.expression.node.blocknode"
-    let ConditionalNode         = Class "math.expression.node.conditionalnode"
-    let ConstantNode            = Class "math.expression.node.constantnode"
-    let FunctionAssignmentNode  = Class "math.expression.node.functionassignmentnode"
-    let FunctionNode            = Class "math.expression.node.functionnode"
-    let IndexNode               = Class "math.expression.node.indexnode"
-    let ObjectNode              = Class "math.expression.node.objectnode"
-    let OperatorNode            = Class "math.expression.node.operatornode"
-    let ParenthesisNode         = Class "math.expression.node.parenthesisnode"
-    let RangeNode               = Class "math.expression.node.rangenode"
-    let RelationalNode          = Class "math.expression.node.relationalnode"
-    let SymbolNode              = Class "math.expression.node.symbolnode"
+    let AccessorNode            = Class "AccessorNode"            |> importFromMathJS "AccessorNode"
+    let ArrayNode               = Class "ArrayNode"               |> importFromMathJS "ArrayNode"
+    let AssignmentNode          = Class "AssignmentNode"          |> importFromMathJS "AssignmentNode"
+    let BlockNode               = Class "BlockNode"               |> importFromMathJS "BlockNode"
+    let ConditionalNode         = Class "ConditionalNode"         |> importFromMathJS "ConditionalNode"
+    let ConstantNode            = Class "ConstantNode"            |> importFromMathJS "ConstantNode"
+    let FunctionAssignmentNode  = Class "FunctionAssignmentNode"  |> importFromMathJS "FunctionAssignmentNode"
+    let FunctionNode            = Class "FunctionNode"            |> importFromMathJS "FunctionNode"
+    let IndexNode               = Class "IndexNode"               |> importFromMathJS "IndexNode"
+    let ObjectNode              = Class "ObjectNode"              |> importFromMathJS "ObjectNode"
+    let OperatorNode            = Class "OperatorNode"            |> importFromMathJS "OperatorNode"
+    let ParenthesisNode         = Class "ParenthesisNode"         |> importFromMathJS "ParenthesisNode"
+    let RangeNode               = Class "RangeNode"               |> importFromMathJS "RangeNode"
+    let RelationalNode          = Class "RelationalNode"          |> importFromMathJS "RelationalNode"
+    let SymbolNode              = Class "SymbolNode"              |> importFromMathJS "SymbolNode"
 
     let ParenthesisOptions =
         Pattern.EnumStrings "ParenthesisOptions" [
@@ -394,6 +470,7 @@ module Definition =
 
     let Node =
         Class "Node"
+        |> importFromMathJS "Node"
         |+> Instance [
             "clone" => T<unit> ^-> TSelf
 
@@ -428,9 +505,9 @@ module Definition =
             "type" =? T<string>
         ]
 
-    let NullValue = Pattern.EnumInlines "NullValue" ["null", "null"]
+    let NullValue = Pattern.EnumInlines "NullValue" [ ("null", "null") ]
 
-    let NaNValue = Pattern.EnumInlines "NaNValue" ["naN", "NaN"]
+    let NaNValue = Pattern.EnumInlines "NaNValue" [ ("naN", "NaN") ]
 
     AccessorNode
         |=> Inherits Node
@@ -594,9 +671,24 @@ module Definition =
         |> ignore
 
     let Index =
-        Class "index"
+        Class "Index"
+        |> importFromMathJS "Index"
         |+> Instance [
             Constructor (T<string> + T<int> + BaseNumber)
+
+            "dimension" => T<int> ^-> T<obj>
+            "isScalar" => T<unit> ^-> T<bool>
+            "min" => T<unit> ^-> !| T<float>
+            "max" => T<unit> ^-> !| T<float>
+            "forEach" => T<JavaScript.Function> ^-> T<unit>
+            "map" => T<JavaScript.Function> ^-> TSelf
+            "clone" => T<unit> ^-> TSelf
+            "size" => T<unit> ^-> !| T<int>
+            "toArray" => T<unit> ^-> !| T<obj>
+            "toJSON" => T<unit> ^-> T<obj>
+            "toString" => T<unit> ^-> T<string>
+            "valueOf" => T<unit> ^-> T<string>
+            "isIndex" =? T<bool>
         ]
 
     let Schur =
@@ -607,6 +699,166 @@ module Definition =
             ]
             Optional = []
         }
+
+    let QR =
+        Pattern.Config "QR" {
+            Required = [
+                "Q", Vector + Matrix
+                "R", Vector + Matrix
+            ]
+            Optional = []
+        }
+
+    let LU =
+        Pattern.Config "LU" {
+            Required = [
+                "L", Vector + Matrix
+                "U", Vector + Matrix
+                "p", !| T<int>
+            ]
+            Optional = []
+        }
+
+    /// The abstract math.js `Matrix` type; `DenseMatrix` and `SparseMatrix`
+    /// are its concrete implementations (see `Math.Matrix` / `Math.Sparse`).
+    let MatrixClass =
+        Class "Matrix"
+        |> importFromMathJS "Matrix"
+        |+> Instance [
+            "type" =? T<string>
+
+            "storage" => T<unit> ^-> T<string>
+            "datatype" => T<unit> ^-> T<string>
+            "create" => Vector * !? T<string> ^-> T<unit>
+            "subset" => Index * !? T<obj> * !? T<obj> ^-> TSelf
+            "get" => !| T<int> ^-> T<obj>
+            "set" => !| T<int> * T<obj> * !? (T<int> + T<string>) ^-> TSelf
+            "resize" => (T<int> + !| T<int>) * !? (T<int> + T<string>) ^-> TSelf
+            "reshape" => !| T<int> ^-> TSelf
+            "clone" => T<unit> ^-> TSelf
+            "size" => T<unit> ^-> !| T<int>
+            "map" => T<JavaScript.Function> * !? T<bool> ^-> TSelf
+            "forEach" => T<JavaScript.Function> * !? T<bool> ^-> T<unit>
+            "toArray" => T<unit> ^-> T<obj>
+            "valueOf" => T<unit> ^-> T<obj>
+            "format" => !? T<obj> ^-> T<string>
+            "toString" => T<unit> ^-> T<string>
+            "toJSON" => T<unit> ^-> T<obj>
+            "diagonal" => !? (T<int> + BaseNumber.Type) ^-> TSelf
+            "swapRows" => T<int> * T<int> ^-> TSelf
+            "isMatrix" =? T<bool>
+        ]
+
+    let DenseMatrix =
+        Class "DenseMatrix"
+        |> importFromMathJS "DenseMatrix"
+        |=> Inherits MatrixClass
+        |+> Instance [
+            Constructor ((Matrix + Vector + T<obj>) * !? T<string>)
+
+            "rows" =? T<int>
+            "columns" =? T<int>
+            "isDenseMatrix" =? T<bool>
+        ]
+
+    let SparseMatrix =
+        Class "SparseMatrix"
+        |> importFromMathJS "SparseMatrix"
+        |=> Inherits MatrixClass
+        |+> Instance [
+            Constructor ((Matrix + Vector + T<obj>) * !? T<string>)
+
+            "density" => T<unit> ^-> T<float>
+            "isSparseMatrix" =? T<bool>
+        ]
+
+    let ImmutableDenseMatrix =
+        Class "ImmutableDenseMatrix"
+        |> importFromMathJS "ImmutableDenseMatrix"
+        |=> Inherits MatrixClass
+        |+> Instance [
+            Constructor ((Matrix + Vector + T<obj>) * !? T<string>)
+
+            "isImmutableDenseMatrix" =? T<bool>
+        ]
+
+    let RangeClass =
+        Class "Range"
+        |> importFromMathJS "Range"
+        |+> Instance [
+            Constructor ((BaseNumber.Type + T<float> + T<bigint> + Fraction.Type) * (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type) * !? (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type) * !? T<bool>)
+
+            "start" =? T<obj>
+            "end" =? T<obj>
+            "step" =? T<obj>
+            "includeEnd" =? T<bool>
+
+            "clone" => T<unit> ^-> TSelf
+            "size" => T<unit> ^-> !| T<int>
+            "min" => T<unit> ^-> (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type)
+            "max" => T<unit> ^-> (BaseNumber.Type + T<float> + T<bigint> + Fraction.Type)
+            "forEach" => T<JavaScript.Function> ^-> T<unit>
+            "map" => T<JavaScript.Function> ^-> TSelf
+            "toArray" => T<unit> ^-> !| T<obj>
+            "valueOf" => T<unit> ^-> !| T<obj>
+            "format" => !? T<obj> ^-> T<string>
+            "toString" => T<unit> ^-> T<string>
+            "toJSON" => T<unit> ^-> T<obj>
+            "isRange" =? T<bool>
+        ]
+
+    let ResultSet =
+        Class "ResultSet"
+        |> importFromMathJS "ResultSet"
+        |+> Instance [
+            "type" =? T<string>
+            "entries" =? !| T<obj>
+            "valueOf" => T<unit> ^-> !| T<obj>
+            "toString" => T<unit> ^-> T<string>
+            "toJSON" => T<unit> ^-> T<obj>
+            "isResultSet" =? T<bool>
+        ]
+
+    let Help =
+        Class "Help"
+        |> importFromMathJS "Help"
+        |+> Instance [
+            Constructor T<obj>
+
+            "type" =? T<string>
+            "doc" =? T<obj>
+            "valueOf" => T<unit> ^-> T<string>
+            "toString" => T<unit> ^-> T<string>
+            "toJSON" => T<unit> ^-> T<string>
+            "isHelp" =? T<bool>
+        ]
+
+    let ArgumentsError =
+        Class "ArgumentsError"
+        |> importFromMathJS "ArgumentsError"
+        |+> Instance [
+            Constructor (T<string> * T<float> * T<float>)
+            "name" =? T<string>
+            "isArgumentsError" =? T<bool>
+        ]
+
+    let DimensionError =
+        Class "DimensionError"
+        |> importFromMathJS "DimensionError"
+        |+> Instance [
+            Constructor (T<obj> * T<obj> * !? T<string>)
+            "name" =? T<string>
+            "isDimensionError" =? T<bool>
+        ]
+
+    let IndexError =
+        Class "IndexError"
+        |> importFromMathJS "IndexError"
+        |+> Instance [
+            Constructor (T<obj> * !? T<obj> * !? T<string>)
+            "name" =? T<string>
+            "isIndexError" =? T<bool>
+        ]
 
     let mathOps isInst : CodeModel.IClassMember list =
         let (=!>) n f =
@@ -652,11 +904,15 @@ module Definition =
 
             "createUnit" =!> T<string> * (T<string> * Unit.Type) * T<obj> ^-> Unit.Type
 
-            "fraction" =!> (T<float> * T<float> ^-> T<float>) + (T<string> ^-> T<float>)
+            "fraction" =!> (T<float> * T<float> ^-> Fraction.Type) + (T<string> ^-> Fraction.Type)
 
-            "fraction" =!> WithTypes AllValues (fun t -> t ^-> t)
+            "fraction" =!> WithTypes AllValues (fun t -> t ^-> Fraction.Type)
 
             "index" =!> Vector ^-> Index
+
+            "reviver" =!> T<unit> ^-> T<JavaScript.Function>
+
+            "replacer" =!> T<unit> ^-> T<JavaScript.Function>
 
             "matrix" =!> !? Matrix * !? T<string> * !? T<string> ^-> Matrix
 
@@ -701,7 +957,7 @@ module Definition =
 
             "lsolveAll" =!> BaseNumber * BaseNumber ^-> BaseNumber
 
-            "lup" =!> BaseNumber ^-> (Vector * Vector * Vector)
+            "lup" =!> (Vector + Matrix) ^-> LU
 
             "lusolve" =!> (Matrix + Vector + T<obj>) * BaseNumber ^-> BaseNumber
 
@@ -709,13 +965,13 @@ module Definition =
 
             "polynomialRoot" =!> BaseNumber * BaseNumber * BaseNumber * BaseNumber ^-> Vector
 
-            "qr" =!> BaseNumber ^-> (Matrix * Matrix) + (Vector * Vector)
+            "qr" =!> (Vector + Matrix) ^-> QR
 
             "rationalize" =!> (Node + T<string>) * !? (T<bool> + T<obj>) * !? T<bool> ^-> Node + T<obj>
 
             "resolve" =!> (Node + T<string>) * T<obj> ^-> Node + !| Node
 
-            "shur" =!> (Vector + Matrix) ^-> Schur
+            "schur" =!> (Vector + Matrix) ^-> Schur
 
             "simplify" =!> (Node + T<string>) * !? (T<string * string> + T<string> + T<JavaScript.Function>) ^-> Node
 
@@ -852,6 +1108,9 @@ module Definition =
             "xor" =!> WithTypes AllValues (fun t -> t * t ^-> t)
 
             //matrix
+            "apply" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> BaseNumber
+            |> ObsoleteWithMessage "Deprecated in math.js 14.2; use MapSlices instead."
+
             "mapSlices" =!> (BaseNumber) * T<int> * T<JavaScript.Function> ^-> BaseNumber
 
             "column" =!> (BaseNumber) * T<int> ^-> (BaseNumber)
@@ -1110,6 +1369,26 @@ module Definition =
             //unit
             "to" =!> (Unit.Type + BaseNumber) * (Unit.Type + BaseNumber) ^-> (Unit.Type + BaseNumber)
 
+            "toBest" =!> Unit.Type * !? (T<string> + !| (T<string> + Unit.Type)) * !? T<obj> ^-> Unit.Type
+
+            //fractions
+            "num" =!> WithTypes FractionValues (fun t -> t ^-> T<bigint>)
+
+            "den" =!> WithTypes FractionValues (fun t -> t ^-> T<bigint>)
+
+            "bernoulli" =!> (T<float> + T<bigint> + BaseNumber.Type + Fraction.Type) ^-> (T<float> + Fraction.Type + BaseNumber.Type)
+
+            //low-level scalar helpers
+            "addScalar" =!> WithTypes ScalarValues (fun t -> t * t ^-> t)
+
+            "subtractScalar" =!> WithTypes ScalarValues (fun t -> t * t ^-> t)
+
+            "multiplyScalar" =!> WithTypes ScalarValues (fun t -> t * t ^-> t)
+
+            "divideScalar" =!> WithTypes ScalarValues (fun t -> t * t ^-> t)
+
+            "equalScalar" =!> WithTypes ScalarValues (fun t -> t * t ^-> T<bool>)
+
             //utils
             "clone" =!> WithTypes AllValues (fun t -> t ^-> t)
 
@@ -1132,6 +1411,101 @@ module Definition =
             "numeric" =!> T<string> + BaseNumber * !? T<string> ^-> BaseNumber
             
             "typeOf" =!> T<obj> ^-> T<string>
+
+            "nullish" =!> T<obj> * T<obj> ^-> T<obj>
+
+            "pinv" =!> (Vector + Matrix) ^-> (Vector + Matrix)
+
+            "isBounded" =!> T<obj> ^-> T<bool>
+
+            "isFinite" =!> T<obj> ^-> T<bool>
+
+            //type checks
+            "isAccessorNode" =!> T<obj> ^-> T<bool>
+
+            "isArray" =!> T<obj> ^-> T<bool>
+
+            "isArrayNode" =!> T<obj> ^-> T<bool>
+
+            "isAssignmentNode" =!> T<obj> ^-> T<bool>
+
+            "isBigInt" =!> T<obj> ^-> T<bool>
+
+            "isBigNumber" =!> T<obj> ^-> T<bool>
+
+            "isBlockNode" =!> T<obj> ^-> T<bool>
+
+            "isBoolean" =!> T<obj> ^-> T<bool>
+
+            "isChain" =!> T<obj> ^-> T<bool>
+
+            "isCollection" =!> T<obj> ^-> T<bool>
+
+            "isComplex" =!> T<obj> ^-> T<bool>
+
+            "isConditionalNode" =!> T<obj> ^-> T<bool>
+
+            "isConstantNode" =!> T<obj> ^-> T<bool>
+
+            "isDate" =!> T<obj> ^-> T<bool>
+
+            "isDenseMatrix" =!> T<obj> ^-> T<bool>
+
+            "isFraction" =!> T<obj> ^-> T<bool>
+
+            "isFunction" =!> T<obj> ^-> T<bool>
+
+            "isFunctionAssignmentNode" =!> T<obj> ^-> T<bool>
+
+            "isFunctionNode" =!> T<obj> ^-> T<bool>
+
+            "isHelp" =!> T<obj> ^-> T<bool>
+
+            "isIndex" =!> T<obj> ^-> T<bool>
+
+            "isIndexNode" =!> T<obj> ^-> T<bool>
+
+            "isMap" =!> T<obj> ^-> T<bool>
+
+            "isMatrix" =!> T<obj> ^-> T<bool>
+
+            "isNode" =!> T<obj> ^-> T<bool>
+
+            "isNull" =!> T<obj> ^-> T<bool>
+
+            "isNumber" =!> T<obj> ^-> T<bool>
+
+            "isObject" =!> T<obj> ^-> T<bool>
+
+            "isObjectNode" =!> T<obj> ^-> T<bool>
+
+            "isObjectWrappingMap" =!> T<obj> ^-> T<bool>
+
+            "isOperatorNode" =!> T<obj> ^-> T<bool>
+
+            "isParenthesisNode" =!> T<obj> ^-> T<bool>
+
+            "isPartitionedMap" =!> T<obj> ^-> T<bool>
+
+            "isRange" =!> T<obj> ^-> T<bool>
+
+            "isRangeNode" =!> T<obj> ^-> T<bool>
+
+            "isRegExp" =!> T<obj> ^-> T<bool>
+
+            "isRelationalNode" =!> T<obj> ^-> T<bool>
+
+            "isResultSet" =!> T<obj> ^-> T<bool>
+
+            "isSparseMatrix" =!> T<obj> ^-> T<bool>
+
+            "isString" =!> T<obj> ^-> T<bool>
+
+            "isSymbolNode" =!> T<obj> ^-> T<bool>
+
+            "isUndefined" =!> T<obj> ^-> T<bool>
+
+            "isUnit" =!> T<obj> ^-> T<bool>
         ]
 
     let mathProps isInst: CodeModel.IClassMember list =
@@ -1171,6 +1545,120 @@ module Definition =
 
             "tau" =?! T<float>
 
+            //physical constants
+            "atomicMass" =?! Unit.Type
+
+            "avogadro" =?! Unit.Type
+
+            "bohrMagneton" =?! Unit.Type
+
+            "bohrRadius" =?! Unit.Type
+
+            "boltzmann" =?! Unit.Type
+
+            "classicalElectronRadius" =?! Unit.Type
+
+            "conductanceQuantum" =?! Unit.Type
+
+            "coulomb" =?! Unit.Type
+
+            "coulombConstant" =?! Unit.Type
+
+            "deuteronMass" =?! Unit.Type
+
+            "efimovFactor" =?! Unit.Type
+
+            "electricConstant" =?! Unit.Type
+
+            "electronMass" =?! Unit.Type
+
+            "elementaryCharge" =?! Unit.Type
+
+            "faraday" =?! Unit.Type
+
+            "fermiCoupling" =?! Unit.Type
+
+            "fineStructure" =?! Unit.Type
+
+            "firstRadiation" =?! Unit.Type
+
+            "gasConstant" =?! Unit.Type
+
+            "gravitationConstant" =?! Unit.Type
+
+            "gravity" =?! Unit.Type
+
+            "hartreeEnergy" =?! Unit.Type
+
+            "inverseConductanceQuantum" =?! Unit.Type
+
+            "klitzing" =?! Unit.Type
+
+            "loschmidt" =?! Unit.Type
+
+            "magneticConstant" =?! Unit.Type
+
+            "magneticFluxQuantum" =?! Unit.Type
+
+            "molarMass" =?! Unit.Type
+
+            "molarMassC12" =?! Unit.Type
+
+            "molarPlanckConstant" =?! Unit.Type
+
+            "molarVolume" =?! Unit.Type
+
+            "neutronMass" =?! Unit.Type
+
+            "nuclearMagneton" =?! Unit.Type
+
+            "planckCharge" =?! Unit.Type
+
+            "planckConstant" =?! Unit.Type
+
+            "planckLength" =?! Unit.Type
+
+            "planckMass" =?! Unit.Type
+
+            "planckTemperature" =?! Unit.Type
+
+            "planckTime" =?! Unit.Type
+
+            "protonMass" =?! Unit.Type
+
+            "quantumOfCirculation" =?! Unit.Type
+
+            "reducedPlanckConstant" =?! Unit.Type
+
+            "rydberg" =?! Unit.Type
+
+            "sackurTetrode" =?! Unit.Type
+
+            "secondRadiation" =?! Unit.Type
+
+            "speedOfLight" =?! Unit.Type
+
+            "stefanBoltzmann" =?! Unit.Type
+
+            "thomsonCrossSection" =?! Unit.Type
+
+            "vacuumImpedance" =?! Unit.Type
+
+            "weakMixingAngle" =?! Unit.Type
+
+            "wienDisplacement" =?! Unit.Type
+
+            //legacy internal constants, still exported
+            "_Infinity" =?! T<float>
+
+            "_NaN" =?! T<float>
+
+            "_null" =?! T<obj>
+
+            "_true" =?! T<bool>
+
+            "_false" =?! T<bool>
+
             "undefined" =?! T<obj>
 
             "version" =?! T<string>   
@@ -1208,6 +1696,8 @@ module Definition =
             "lsolveAll" => BaseNumber ^-> Chain.Type
 
             "lup" => T<unit> ^-> Chain.Type
+
+            "schur" => T<unit> ^-> Chain.Type
 
             "lusolve" => BaseNumber ^-> Chain.Type
 
@@ -1340,6 +1830,9 @@ module Definition =
             "xor" => WithTypes AllValues (fun t -> t ^-> Chain.Type)
 
             //matrix
+            "apply" => T<int> * T<JavaScript.Function> ^-> Chain.Type
+            |> ObsoleteWithMessage "Deprecated in math.js 14.2; use MapSlices instead."
+
             "mapSlices" => T<int> * T<JavaScript.Function> ^-> Chain.Type
 
             "column" => T<int> ^-> Chain.Type
@@ -1385,6 +1878,8 @@ module Definition =
             "matrixFromFunction" => ((T<JavaScript.Function> * !? T<string> * !? T<string>) + (T<string> * !? T<string> * T<JavaScript.Function>)) ^-> Chain.Type
 
             "matrixFromRows" => T<unit> ^-> Chain.Type
+
+            "pinv" => T<unit> ^-> Chain.Type
 
             "ones" => !+ T<int> ^-> Chain.Type
 
@@ -1574,6 +2069,26 @@ module Definition =
             //unit
             "to" => (Unit.Type + BaseNumber) ^-> Chain.Type
 
+            "toBest" => !? (T<string> + !| (T<string> + Unit.Type)) * !? T<obj> ^-> Chain.Type
+
+            //fractions
+            "num" => T<unit> ^-> Chain.Type
+
+            "den" => T<unit> ^-> Chain.Type
+
+            "bernoulli" => T<unit> ^-> Chain.Type
+
+            //low-level scalar helpers
+            "addScalar" => WithTypes ScalarValues (fun t -> t ^-> Chain.Type)
+
+            "subtractScalar" => WithTypes ScalarValues (fun t -> t ^-> Chain.Type)
+
+            "multiplyScalar" => WithTypes ScalarValues (fun t -> t ^-> Chain.Type)
+
+            "divideScalar" => WithTypes ScalarValues (fun t -> t ^-> Chain.Type)
+
+            "equalScalar" => WithTypes ScalarValues (fun t -> t ^-> Chain.Type)
+
             //utils
             "clone" => T<unit> ^-> Chain.Type
 
@@ -1594,6 +2109,12 @@ module Definition =
             "isZero" => T<unit> ^-> Chain.Type
 
             "numeric" => !? T<string> ^-> Chain.Type
+
+            "nullish" => T<obj> ^-> Chain.Type
+
+            "isBounded" => T<unit> ^-> Chain.Type
+
+            "isFinite" => T<unit> ^-> Chain.Type
 
             //chain
             "done" => T<unit> ^-> Chain.Type
@@ -1616,8 +2137,21 @@ module Definition =
                 Unit
                 UnitComponent
                 BaseNumber
+                Fraction
                 Polar
                 Schur
+                QR
+                LU
+                MatrixClass
+                DenseMatrix
+                SparseMatrix
+                ImmutableDenseMatrix
+                RangeClass
+                ResultSet
+                Help
+                ArgumentsError
+                DimensionError
+                IndexError
                 Complex
                 DerivativeOption
                 ParenthesisOptions
