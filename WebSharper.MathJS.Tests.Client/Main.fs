@@ -47,5 +47,5 @@ module Main =
         Runner.RunTests tests |> addOne
 
     [<SPAEntryPoint>]
-    let Main =
+    let Main () =
         RunTests true true
